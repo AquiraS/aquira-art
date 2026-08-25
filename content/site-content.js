@@ -36,7 +36,7 @@ const siteContent = {
   },
 
   navigation: [
-    { label: "Aquiraについて", href: "/about/" },
+    { label: "プロフィール", href: "/about/" },
     { label: "作品", href: "/works/" },
     { label: "活動と協働", href: "/practice/" },
   ],
@@ -51,11 +51,11 @@ const siteContent = {
 
   contact: {
     label: "お問い合わせ・ご相談",
-    href: "https://www.aquira.art/book-online",
+    href: "mailto:aquirae@me.com",
     eyebrow: "CONTACT",
-    title: "対話やご相談は、こちらから。",
+    title: "まだ言葉になっていない構想から、ご相談ください。",
     description:
-      "作品、協働、講座、制作のご相談は、既存の公式コンタクトページからお送りいただけます。内容や条件が未整理の段階でも、お気軽にお声がけください。",
+      "作品、協働、講座、制作のご相談を、相手の時間と心の余白を尊重する対話から始めます。内容や条件が未整理の段階でも、お送りください。",
     buttonLabel: "お問い合わせ・ご相談へ",
   },
 
@@ -90,6 +90,20 @@ const siteContent = {
         description:
           "テクノロジーを、表現と対話の可能性を広げるための道具として活用します。",
       },
+    ],
+  },
+
+  officialNetwork: {
+    eyebrow: "OFFICIAL ECOSYSTEM",
+    title: "作品・記録・公共的実践を、ひとつの文脈で。",
+    summary:
+      "Aquiraの公式情報は、現在の作品、名称と歩みの記録、社会と交わる実践という3つの入口で構成されています。",
+    href: "/official-network/",
+    label: "3つの公式サイトの関係を見る",
+    links: [
+      { label: "作品・表現", description: "作家プロフィール、作品、制作、協働・利用許諾。", href: "https://www.aquira.art/", internal: true },
+      { label: "起点・記録", description: "名称の由来、来歴、アーカイブ、ブランド利用に関する記録。", href: "https://www.aquira1978.com/" },
+      { label: "公共的実践", description: "対話、協働、社会と交わるプロジェクトの記録と入口。", href: "https://www.aquira.org/" },
     ],
   },
 
@@ -321,7 +335,7 @@ const siteContent = {
         label: "商品の引渡時期",
         paragraphs: [
           "ご入金確認後、通常14営業日以内に発送します。",
-          "受注制作商品は、制作開始から約○週間で発送します。",
+          "受注制作商品は、制作内容・仕様により異なるため、個別にご案内します。",
           "天候、配送事業者の事情、通関手続その他の事情により、配送が遅延する場合があります。",
         ],
       },

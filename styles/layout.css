@@ -1,4 +1,3 @@
-/* Artist Evidence Atlas: asymmetrical reading flow, archival rules, and transparent source-oriented footer links. */
 .site-header,
 .site-footer,
 .section,
@@ -7,11 +6,16 @@
 }
 
 .site-header {
+  position: sticky;
+  z-index: 10;
+  top: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   min-height: 4.75rem;
   border-bottom: 1px solid var(--color-rule);
+  background: color-mix(in srgb, var(--color-paper) 95%, transparent);
+  backdrop-filter: blur(10px);
 }
 
 .site-header__navigation {
@@ -21,36 +25,51 @@
 }
 
 .site-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-block: 1.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(10rem, 0.8fr) minmax(12rem, 1fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  padding-block: clamp(2.5rem, 6vw, 5rem) 1.5rem;
   border-top: 1px solid var(--color-ink);
   font-family: var(--font-ui);
   font-size: 0.76rem;
   letter-spacing: 0.06em;
 }
 
-.site-footer p {
+.site-footer p,
+.site-footer ul {
   margin: 0;
 }
 
+.site-footer__network,
 .site-footer__links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  margin: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.7rem;
+}
+
+.site-footer__network > p {
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.site-footer__network ul,
+.site-footer__links ul {
+  display: grid;
+  gap: 0.5rem;
   padding: 0;
   list-style: none;
 }
 
-.site-footer__links a {
+.site-footer a {
   text-underline-offset: 0.35em;
 }
 
 .site-footer__meta {
-  align-self: center;
-  white-space: nowrap;
+  grid-column: 1 / -1;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-rule);
 }
 
 .section {
@@ -64,25 +83,33 @@
 
 @media (max-width: 700px) {
   .site-header {
-    align-items: flex-start;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
     gap: 0.8rem;
     padding-block: 1rem;
   }
 
   .site-header__navigation {
+    grid-column: 1 / -1;
+    grid-row: 2;
     width: 100%;
-    flex-wrap: wrap;
-    gap: 0.6rem 1rem;
+    flex-wrap: nowrap;
+    gap: 0.8rem 1rem;
     margin-left: 0;
+    overflow-x: auto;
+  }
+
+  .site-header__contact {
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .site-footer {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .site-footer__meta {
-    align-self: flex-start;
-    white-space: normal;
+    grid-column: auto;
   }
 }

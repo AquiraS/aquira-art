@@ -12,8 +12,8 @@ const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectDirectory = path.resolve(scriptDirectory, "..");
 const contentPath = pathToFileURL(path.join(projectDirectory, "content", "site-content.js"));
 const { default: content } = await import(`${contentPath.href}?updated=${Date.now()}`);
-const buildDate = "2026-08-19";
-const assetVersion = "20260819";
+const buildDate = "2026-08-25";
+const assetVersion = "20260825";
 
 function escapeHtml(value) {
   return String(value)
@@ -61,13 +61,16 @@ function renderHeader({ language = "ja", pathname = "/" } = {}) {
 }
 function renderFooter() {
   const socialLinks = content.entity.sameAs
-    .map((url) => `<li><a href="${escapeHtml(url)}" rel="me noopener">${escapeHtml(new URL(url).hostname.replace("www.", ""))}</a></li>`)
+    .map((url) => `<li><a href="${escapeHtml(url)}" rel="me noopener" target="_blank">${escapeHtml(new URL(url).hostname.replace("www.", ""))}</a></li>`)
+    .join("");
+  const officialLinks = content.officialNetwork.links
+    .map((item) => `<li><a href="${escapeHtml(item.href)}"${item.internal ? "" : ' target="_blank" rel="noopener noreferrer"'}>${escapeHtml(item.label)}</a></li>`)
     .join("");
   return `
     <footer class="site-footer">
-      <p class="site-footer__title">${escapeHtml(content.footer.title)}</p>
-      <p class="site-footer__description">${escapeHtml(content.footer.description)}</p>
-      <ul class="site-footer__links" aria-label="公式プロフィール・法定情報・お問い合わせ"><li><a href="/accessibility/">アクセシビリティ</a></li><li><a href="${escapeHtml(content.footer.legalNotice.href)}">${escapeHtml(content.footer.legalNotice.label)}</a></li><li><a href="${escapeHtml(content.contact.href)}">${escapeHtml(content.contact.label)}</a></li>${socialLinks}</ul>
+      <div class="site-footer__identity"><p class="site-footer__title">${escapeHtml(content.footer.title)}</p><p class="site-footer__description">${escapeHtml(content.footer.description)}</p></div>
+      <nav class="site-footer__network" aria-label="Aquira公式エコシステム"><p>公式エコシステム</p><ul>${officialLinks}</ul></nav>
+      <nav class="site-footer__links" aria-label="公式プロフィール・法定情報・お問い合わせ"><ul><li><a href="/accessibility/">アクセシビリティ</a></li><li><a href="${escapeHtml(content.footer.legalNotice.href)}">${escapeHtml(content.footer.legalNotice.label)}</a></li><li><a href="${escapeHtml(content.contact.href)}">${escapeHtml(content.contact.label)}</a></li>${socialLinks}</ul></nav>
       <p class="site-footer__meta">公式情報の最終更新: <time datetime="${buildDate}">${buildDate}</time></p>
     </footer>`;
 }
@@ -204,8 +207,14 @@ function renderIdentityFacts() {
 function renderWorkCards(items) {
   return `<div class="work-list">${items
     .map(
-      (work) => `<article class="work-card"><p class="work-card__number">${escapeHtml(work.number)}</p><h3>${escapeHtml(work.title)}</h3><p class="work-card__description">${escapeHtml(work.description)}</p></article>`,
+      (work) => `<article class="work-card"><a class="work-card__link" href="/works/" aria-label="${escapeHtml(work.title)}の作品領域を見る"><p class="work-card__number">${escapeHtml(work.number)}</p><h3>${escapeHtml(work.title)}</h3><p class="work-card__description">${escapeHtml(work.description)}</p><span>作品領域を見る →</span></a></article>`,
     )
+    .join("")}</div>`;
+}
+
+function renderOfficialNetworkCards() {
+  return `<div class="official-network-grid">${content.officialNetwork.links
+    .map((item, index) => `<article class="official-network-card"><p class="official-network-card__number">0${index + 1}</p><h3>${escapeHtml(item.label)}</h3><p>${escapeHtml(item.description)}</p><a class="text-link" href="${escapeHtml(item.href)}"${item.internal ? "" : ' target="_blank" rel="noopener noreferrer"'}>${escapeHtml(item.internal ? "このサイトを見る" : "公式サイトを見る")} →</a></article>`)
     .join("")}</div>`;
 }
 
@@ -267,8 +276,14 @@ const homeMain = `
     <p class="statement">${escapeHtml(content.practice.summary)}</p>
     <a class="text-link" href="/practice/">活動と協働について知る</a>
   </section>
+  <section class="section section--muted" aria-labelledby="official-network-title">
+    ${renderSectionHeading(content.officialNetwork.eyebrow, content.officialNetwork.title, "official-network-title")}
+    <p class="statement">${escapeHtml(content.officialNetwork.summary)}</p>
+    ${renderOfficialNetworkCards()}
+    <a class="text-link" href="${escapeHtml(content.officialNetwork.href)}">${escapeHtml(content.officialNetwork.label)}</a>
+  </section>
   <section class="section section--contact" aria-labelledby="contact-title">
-    ${renderSectionHeading("CONTACT", "対話やご相談は、こちらから。", "contact-title")}
+    ${renderSectionHeading(content.contact.eyebrow, content.contact.title, "contact-title")}
     <p class="statement">${escapeHtml(content.contact.description)}</p>
     <a class="button button--primary" href="${escapeHtml(content.contact.href)}">${escapeHtml(content.contact.buttonLabel)}</a>
   </section>`;
@@ -365,6 +380,39 @@ const practiceSchema = [
     title: practiceTitle,
     description: practiceDescription,
     type: "CollectionPage",
+  }),
+];
+
+const officialNetworkTitle = `Aquira公式エコシステム | ${content.site.titleSuffix}`;
+const officialNetworkDescription = "Aquiraの公式サイト群。作品・表現、起点・記録、公共的実践という3つの役割と入口を案内します。";
+const officialNetworkMain = `
+  <section class="hero hero--compact" aria-labelledby="official-network-page-title">
+    <p class="eyebrow">${escapeHtml(content.officialNetwork.eyebrow)}</p>
+    <h1 id="official-network-page-title">${escapeHtml(content.officialNetwork.title)}</h1>
+    <p class="lead">${escapeHtml(content.officialNetwork.summary)}</p>
+  </section>
+  <section class="section" aria-label="3つの公式サイト">
+    ${renderOfficialNetworkCards()}
+  </section>`;
+const officialNetworkSchema = [
+  websiteSchema(),
+  personSchema(),
+  pageSchema({
+    pathname: "/official-network/",
+    title: officialNetworkTitle,
+    description: officialNetworkDescription,
+    additional: {
+      mainEntity: {
+        "@type": "ItemList",
+        name: "Aquira公式エコシステム",
+        itemListElement: content.officialNetwork.links.map((item, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: item.label,
+          url: item.href,
+        })),
+      },
+    },
   }),
 ];
 
@@ -586,6 +634,7 @@ const pages = [
   { pathname: "/ecosystem/", output: "ecosystem/index.html", title: ecosystemTitle, description: ecosystemDescription, schema: ecosystemSchema, main: ecosystemMain },
   { pathname: "/works/", output: "works/index.html", title: worksTitle, description: worksDescription, schema: worksSchema, main: worksMain },
   { pathname: "/practice/", output: "practice/index.html", title: practiceTitle, description: practiceDescription, schema: practiceSchema, main: practiceMain },
+  { pathname: "/official-network/", output: "official-network/index.html", title: officialNetworkTitle, description: officialNetworkDescription, schema: officialNetworkSchema, main: officialNetworkMain },
   { pathname: "/licensing/", output: "licensing/index.html", title: licensingTitle, description: licensingDescription, schema: licensingSchema, main: licensingMain },
   { pathname: "/faq/", output: "faq/index.html", title: faqTitle, description: faqDescription, schema: faqSchema, main: faqMain },
   { pathname: englishPathname, output: "en/index.html", title: englishTitle, description: englishDescription, schema: englishSchema, main: englishMain, language: "en" },
