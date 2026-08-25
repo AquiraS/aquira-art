@@ -16,6 +16,7 @@ const checks = [
   { file: "ecosystem/index.html", canonical: "https://www.aquira.art/ecosystem/", type: "WebPage", language: "ja" },
   { file: "works/index.html", canonical: "https://www.aquira.art/works/", type: "CollectionPage", language: "ja" },
   { file: "practice/index.html", canonical: "https://www.aquira.art/practice/", type: "CollectionPage", language: "ja" },
+  { file: "official-network/index.html", canonical: "https://www.aquira.art/official-network/", type: "WebPage", language: "ja" },
   { file: "licensing/index.html", canonical: "https://www.aquira.art/licensing/", type: "WebPage", language: "ja" },
   { file: "faq/index.html", canonical: "https://www.aquira.art/faq/", type: "FAQPage", language: "ja" },
   { file: "en/index.html", canonical: "https://www.aquira.art/en/", type: "WebPage", language: "en" },

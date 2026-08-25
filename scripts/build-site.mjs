@@ -12,8 +12,8 @@ const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectDirectory = path.resolve(scriptDirectory, "..");
 const contentPath = pathToFileURL(path.join(projectDirectory, "content", "site-content.js"));
 const { default: content } = await import(`${contentPath.href}?updated=${Date.now()}`);
-const buildDate = "2026-08-25";
-const assetVersion = "20260825";
+const buildDate = new Date().toISOString().slice(0, 10);
+const assetVersion = buildDate.replaceAll("-", "");
 
 function escapeHtml(value) {
   return String(value)
@@ -61,7 +61,7 @@ function renderHeader({ language = "ja", pathname = "/" } = {}) {
 }
 function renderFooter() {
   const socialLinks = content.entity.sameAs
-    .map((url) => `<li><a href="${escapeHtml(url)}" rel="me noopener" target="_blank">${escapeHtml(new URL(url).hostname.replace("www.", ""))}</a></li>`)
+    .map((url) => `<li><a href="${escapeHtml(url)}" rel="me noopener noreferrer" target="_blank">${escapeHtml(new URL(url).hostname.replace("www.", ""))}</a></li>`)
     .join("");
   const officialLinks = content.officialNetwork.links
     .map((item) => `<li><a href="${escapeHtml(item.href)}"${item.internal ? "" : ' target="_blank" rel="noopener noreferrer"'}>${escapeHtml(item.label)}</a></li>`)

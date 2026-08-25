@@ -1,0 +1,17 @@
+{
+  "name": "aquira-art",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Aquira.art の静的サイトを安全に編集・検証・保全するための運用スクリプトです。",
+  "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "check:content": "node scripts/validate-content.mjs",
+    "check:seo": "node scripts/validate-seo-output.mjs",
+    "check:links": "node scripts/validate-links.mjs",
+    "verify": "npm run check:content && npm run build && npm run check:seo && npm run check:links"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
