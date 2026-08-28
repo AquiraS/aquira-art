@@ -12,8 +12,8 @@ const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectDirectory = path.resolve(scriptDirectory, "..");
 const contentPath = pathToFileURL(path.join(projectDirectory, "content", "site-content.js"));
 const { default: content } = await import(`${contentPath.href}?updated=${Date.now()}`);
-const buildDate = "2026-08-25";
-const assetVersion = "20260825";
+const buildDate = "2026-08-28";
+const assetVersion = "20260828";
 
 function escapeHtml(value) {
   return String(value)
@@ -214,7 +214,7 @@ function renderWorkCards(items) {
 
 function renderOfficialNetworkCards() {
   return `<div class="official-network-grid">${content.officialNetwork.links
-    .map((item, index) => `<article class="official-network-card"><p class="official-network-card__number">0${index + 1}</p><h3>${escapeHtml(item.label)}</h3><p>${escapeHtml(item.description)}</p><a class="text-link" href="${escapeHtml(item.href)}"${item.internal ? "" : ' target="_blank" rel="noopener noreferrer"'}>${escapeHtml(item.internal ? "このサイトを見る" : "公式サイトを見る")} →</a></article>`)
+    .map((item, index) => `<article class="official-network-card"><p class="official-network-card__number">0${index + 1}</p><p class="official-network-card__role">${escapeHtml(item.role)}</p><h3>${escapeHtml(item.label)}</h3><p>${escapeHtml(item.description)}</p><a class="text-link" href="${escapeHtml(item.href)}"${item.internal ? "" : ' rel="external noopener noreferrer"'}>${escapeHtml(item.internal ? "このサイトを見る" : "公式サイトを見る")} →</a></article>`)
     .join("")}</div>`;
 }
 
@@ -393,6 +393,10 @@ const officialNetworkMain = `
   </section>
   <section class="section" aria-label="3つの公式サイト">
     ${renderOfficialNetworkCards()}
+  </section>
+  <section class="section section--muted" aria-labelledby="official-network-guidance-title">
+    ${renderSectionHeading("HOW TO USE THE NETWORK", "探している情報から、適切な入口へ。", "official-network-guidance-title")}
+    <div class="prose-list"><article><h2>作品・プロフィール・利用許諾</h2><p>作品の理解、作家プロフィール、協働や利用許諾の相談は、作品・表現の公式ホームである<a class="text-link" href="https://www.aquira.art/">aquira.art</a>からご確認ください。</p></article><article><h2>名称と歩みの記録</h2><p>名称の由来、来歴、アーカイブに関する記録は、<a class="text-link" href="https://www.aquira1978.com/" rel="external noopener noreferrer">aquira1978.com</a>で扱います。</p></article><article><h2>対話・協働・プロジェクト</h2><p>社会と交わる活動、対話、協働の入口は、<a class="text-link" href="https://www.aquira.org/" rel="external noopener noreferrer">aquira.org</a>で扱います。</p></article></div>
   </section>`;
 const officialNetworkSchema = [
   websiteSchema(),
@@ -401,6 +405,7 @@ const officialNetworkSchema = [
     pathname: "/official-network/",
     title: officialNetworkTitle,
     description: officialNetworkDescription,
+    type: "CollectionPage",
     additional: {
       mainEntity: {
         "@type": "ItemList",
@@ -410,8 +415,10 @@ const officialNetworkSchema = [
           position: index + 1,
           name: item.label,
           url: item.href,
+          description: item.description,
         })),
       },
+      significantLink: content.officialNetwork.links.map((item) => item.href),
     },
   }),
 ];

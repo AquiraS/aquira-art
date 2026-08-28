@@ -264,6 +264,15 @@ h3 {
   letter-spacing: 0.12em;
 }
 
+.official-network-card__role {
+  margin: 0 0 0.75rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
 .official-network-card p:not(.official-network-card__number) {
   color: var(--color-text-muted);
 }

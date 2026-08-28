@@ -16,6 +16,7 @@ const checks = [
   { file: "ecosystem/index.html", canonical: "https://www.aquira.art/ecosystem/", type: "WebPage", language: "ja" },
   { file: "works/index.html", canonical: "https://www.aquira.art/works/", type: "CollectionPage", language: "ja" },
   { file: "practice/index.html", canonical: "https://www.aquira.art/practice/", type: "CollectionPage", language: "ja" },
+  { file: "official-network/index.html", canonical: "https://www.aquira.art/official-network/", type: "CollectionPage", language: "ja" },
   { file: "licensing/index.html", canonical: "https://www.aquira.art/licensing/", type: "WebPage", language: "ja" },
   { file: "faq/index.html", canonical: "https://www.aquira.art/faq/", type: "FAQPage", language: "ja" },
   { file: "en/index.html", canonical: "https://www.aquira.art/en/", type: "WebPage", language: "en" },
@@ -66,6 +67,11 @@ if (!robots.includes("User-agent: PetalBot\nDisallow: /")) {
 const sitemap = await readFile(path.join(root, "sitemap.xml"), "utf8");
 for (const { canonical } of checks) {
   if (!sitemap.includes(`<loc>${canonical}</loc>`)) throw new Error(`sitemap.xml: ${canonical} is missing`);
+}
+
+const officialNetwork = await readFile(path.join(root, "official-network/index.html"), "utf8");
+for (const url of ["https://www.aquira.art/", "https://www.aquira1978.com/", "https://www.aquira.org/"]) {
+  if (!officialNetwork.includes(url)) throw new Error(`official-network/index.html: missing official-domain link ${url}`);
 }
 
 console.log(`SEO validation passed: ${checks.length} canonical pages, bilingual metadata, JSON-LD, robots, and sitemap verified.`);
