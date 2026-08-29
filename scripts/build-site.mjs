@@ -226,9 +226,14 @@ function renderIdentityFacts() {
 
 function renderWorkCards(items) {
   return `<div class="work-list">${items
-    .map(
-      (work) => `<article class="work-card"><a class="work-card__link" href="/works/" aria-label="${escapeHtml(work.title)}の作品領域を見る"><p class="work-card__number">${escapeHtml(work.number)}</p><h3>${escapeHtml(work.title)}</h3><p class="work-card__description">${escapeHtml(work.description)}</p><span>作品領域を見る →</span></a></article>`,
-    )
+    .map((work) => {
+      const href = work.href ?? "/works/";
+      const externalAttributes = work.external ? ' target="_blank" rel="external noopener noreferrer"' : "";
+      const ariaLabel = work.external
+        ? `${work.title}の作品領域をViewBugギャラリーで新しいタブで見る`
+        : `${work.title}の作品領域を見る`;
+      return `<article class="work-card"><a class="work-card__link" href="${escapeHtml(href)}"${externalAttributes} aria-label="${escapeHtml(ariaLabel)}"><p class="work-card__number">${escapeHtml(work.number)}</p><h3>${escapeHtml(work.title)}</h3><p class="work-card__description">${escapeHtml(work.description)}</p><span>作品領域を見る →</span></a></article>`;
+    })
     .join("")}</div>`;
 }
 

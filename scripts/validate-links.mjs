@@ -9,6 +9,7 @@ const officialHomepages = [
   { label: "起点・記録", href: "https://www.aquira1978.com/" },
   { label: "公共的実践", href: "https://www.aquira.org/" },
 ];
+const photographyGallery = "https://www.viewbug.com/member/Aquira#/";
 const officialDomains = new Set(["aquira.art", "aquira1978.com", "aquira.org"]);
 const skippedDirectories = new Set([".git", "node_modules"]);
 
@@ -130,4 +131,20 @@ for (const file of ["index.html", "official-network/index.html"]) {
   }
 }
 
-console.log(`Link validation passed: ${pages.length} pages, ${anchorCount} anchors, and all three official labels mapped to their canonical homepages.`);
+for (const file of ["index.html", "works/index.html"]) {
+  const html = await readFile(path.join(root, file), "utf8");
+  const photographyCard = html.match(/<a class="work-card__link"([^>]*)>[\s\S]*?<h3>Photography<\/h3>[\s\S]*?<span>作品領域を見る →<\/span>[\s\S]*?<\/a>/);
+  if (!photographyCard) throw new Error(`${file}: Photography work card is missing`);
+  const attributes = photographyCard[1];
+  if (extractAttribute(attributes, "href") !== photographyGallery) {
+    throw new Error(`${file}: Photography card must link directly to ${photographyGallery}`);
+  }
+  if (extractAttribute(attributes, "target") !== "_blank" || extractAttribute(attributes, "rel") !== "external noopener noreferrer") {
+    throw new Error(`${file}: Photography gallery must open in a safe new tab`);
+  }
+  if (extractAttribute(attributes, "aria-label") !== "Photographyの作品領域をViewBugギャラリーで新しいタブで見る") {
+    throw new Error(`${file}: Photography gallery needs the exact accessible label`);
+  }
+}
+
+console.log(`Link validation passed: ${pages.length} pages, ${anchorCount} anchors, all three official labels, and the Photography gallery mapped to their canonical destinations.`);
