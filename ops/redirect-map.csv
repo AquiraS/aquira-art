@@ -1,0 +1,9 @@
+from,to,action,reason,status
+/book-online,/contact/,301,Retire image-consulting booking path in favor of artist enquiries,review-required
+/portfolio,/works/,301,Replace generic portfolio entry point with works collection,review-required
+/portfolio-collections/my-portfolio,/works/,301,Replace generic portfolio collection with works collection,review-required
+/groups,/practice/,301,Consolidate unclear community group path into practice and collaboration,review-required
+/challenges,/practice/,301,Consolidate unclear challenge path into practice and collaboration,review-required
+/pricing-plans/plans-pricing,,410,Remove unused pricing template without a semantically equivalent destination,review-required
+/category/all-products,,410,Remove unrelated commerce category from artist-site index,review-required
+/blank-1/,,410,Remove unrelated apparel product path from artist-site index,review-required

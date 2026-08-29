@@ -74,4 +74,9 @@ for (const url of ["https://www.aquira.art/", "https://www.aquira1978.com/", "ht
   if (!officialNetwork.includes(url)) throw new Error(`official-network/index.html: missing official-domain link ${url}`);
 }
 
+const production = JSON.parse(await readFile(path.join(root, "ops/production.json"), "utf8"));
+if (production.production_origin !== "https://www.aquira.art/") throw new Error("production.json: production origin is incorrect");
+if (production.canonical_host !== "www.aquira.art") throw new Error("production.json: canonical host is incorrect");
+if (production.deployment_mode !== "manual workflow dispatch") throw new Error("production.json: unexpected deployment mode");
+
 console.log(`SEO validation passed: ${checks.length} canonical pages, bilingual metadata, JSON-LD, robots, and sitemap verified.`);
