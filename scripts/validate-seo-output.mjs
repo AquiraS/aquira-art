@@ -74,6 +74,15 @@ for (const url of ["https://www.aquira.art/", "https://www.aquira1978.com/", "ht
   if (!officialNetwork.includes(url)) throw new Error(`official-network/index.html: missing official-domain link ${url}`);
 }
 
+for (const file of ["index.html", "official-network/index.html"]) {
+  const html = await readFile(path.join(root, file), "utf8");
+  for (const url of ["https://www.aquira.art/", "https://www.aquira1978.com/", "https://www.aquira.org/"]) {
+    if (!html.includes(`<a class="official-network-card__link" href="${url}"`)) {
+      throw new Error(`${file}: ${url} must be a full-card official-network link`);
+    }
+  }
+}
+
 const production = JSON.parse(await readFile(path.join(root, "ops/production.json"), "utf8"));
 if (production.production_origin !== "https://www.aquira.art/") throw new Error("production.json: production origin is incorrect");
 if (production.canonical_host !== "www.aquira.art") throw new Error("production.json: canonical host is incorrect");

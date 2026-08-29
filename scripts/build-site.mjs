@@ -214,7 +214,11 @@ function renderWorkCards(items) {
 
 function renderOfficialNetworkCards() {
   return `<div class="official-network-grid">${content.officialNetwork.links
-    .map((item, index) => `<article class="official-network-card"><p class="official-network-card__number">0${index + 1}</p><p class="official-network-card__role">${escapeHtml(item.role)}</p><h3>${escapeHtml(item.label)}</h3><p>${escapeHtml(item.description)}</p><a class="text-link" href="${escapeHtml(item.href)}"${item.internal ? "" : ' rel="external noopener noreferrer"'}>${escapeHtml(item.internal ? "このサイトを見る" : "公式サイトを見る")} →</a></article>`)
+    .map((item, index) => {
+      const linkText = item.internal ? "このサイトを見る" : "公式サイトを見る";
+      const ariaLabel = `${item.label}のホームページを開く`;
+      return `<article class="official-network-card"><a class="official-network-card__link" href="${escapeHtml(item.href)}"${item.internal ? "" : ' rel="external noopener noreferrer"'} aria-label="${escapeHtml(ariaLabel)}"><p class="official-network-card__number">0${index + 1}</p><p class="official-network-card__role">${escapeHtml(item.role)}</p><h3>${escapeHtml(item.label)}</h3><p>${escapeHtml(item.description)}</p><span class="text-link official-network-card__cta">${escapeHtml(linkText)} <span aria-hidden="true">→</span></span></a></article>`;
+    })
     .join("")}</div>`;
 }
 
