@@ -5,9 +5,9 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const canonicalOrigin = "https://www.aquira.art";
 const officialHomepages = [
-  "https://www.aquira.art/",
-  "https://www.aquira1978.com/",
-  "https://www.aquira.org/",
+  { label: "作品・表現", href: "https://www.aquira.art/" },
+  { label: "起点・記録", href: "https://www.aquira1978.com/" },
+  { label: "公共的実践", href: "https://www.aquira.org/" },
 ];
 const officialDomains = new Set(["aquira.art", "aquira1978.com", "aquira.org"]);
 const skippedDirectories = new Set([".git", "node_modules"]);
@@ -79,9 +79,11 @@ for (const absolutePage of pages) {
 
   const footerMatch = html.match(/<nav class="site-footer__network"[\s\S]*?<\/nav>/);
   if (!footerMatch) throw new Error(`${page}: official ecosystem footer is missing`);
-  for (const homepage of officialHomepages) {
-    if (!footerMatch[0].includes(`href="${homepage}"`)) {
-      throw new Error(`${page}: official ecosystem footer must link to ${homepage}`);
+  const footerLinks = [...footerMatch[0].matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g)]
+    .map((match) => ({ href: match[1], label: match[2] }));
+  for (const { label, href } of officialHomepages) {
+    if (!footerLinks.some((link) => link.label === label && link.href === href)) {
+      throw new Error(`${page}: official ecosystem footer must map ${label} to ${href}`);
     }
   }
 
@@ -116,11 +118,16 @@ for (const absolutePage of pages) {
 
 for (const file of ["index.html", "official-network/index.html"]) {
   const html = await readFile(path.join(root, file), "utf8");
-  for (const homepage of officialHomepages) {
-    if (!html.includes(`<a class="official-network-card__link" href="${homepage}"`)) {
-      throw new Error(`${file}: full official-network card must link to ${homepage}`);
+  const cards = [...html.matchAll(/<a class="official-network-card__link" href="([^"]+)"[^>]*>[\s\S]*?<h3>([^<]+)<\/h3>[\s\S]*?<\/a>/g)]
+    .map((match) => ({ href: match[1], label: match[2] }));
+  if (cards.length !== officialHomepages.length) {
+    throw new Error(`${file}: expected ${officialHomepages.length} official ecosystem cards, found ${cards.length}`);
+  }
+  for (const expected of officialHomepages) {
+    if (!cards.some((card) => card.label === expected.label && card.href === expected.href)) {
+      throw new Error(`${file}: full card must map ${expected.label} to ${expected.href}`);
     }
   }
 }
 
-console.log(`Link validation passed: ${pages.length} pages, ${anchorCount} anchors, and all three official homepages verified.`);
+console.log(`Link validation passed: ${pages.length} pages, ${anchorCount} anchors, and all three official labels mapped to their canonical homepages.`);
