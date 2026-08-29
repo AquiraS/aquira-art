@@ -15,8 +15,9 @@
       <link rel="alternate" href="https://www.aquira.art/" hreflang="ja" />
       <link rel="alternate" href="https://www.aquira.art/en/" hreflang="en" />
       <link rel="alternate" href="https://www.aquira.art/" hreflang="x-default" />
-      <link rel="stylesheet" href="/styles.css?v=20260828" />
-      <script src="/accessibility.js?v=20260828" defer></script>
+      <link rel="stylesheet" href="/styles.css?v=20260829" />
+      <script src="/accessibility.js?v=20260829" defer></script>
+      <script src="/journey.js?v=20260829" defer></script>
       <meta property="og:locale" content="ja_JP" />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="Aquira（アキラ）" />
@@ -86,7 +87,7 @@
   ]
 }</script>
     </head>
-  <body>
+  <body data-journey-stage="art">
     <a class="skip-link" href="#main-content">本文へ移動</a>
 
     <header class="site-header">
@@ -98,6 +99,13 @@
       </nav>
       <a class="site-header__contact" href="mailto:aquirae@me.com">お問い合わせ</a>
     </header>
+
+    <nav class="journey-rail" aria-label="AQUIRAをめぐる3章">
+      <div class="journey-rail__inner">
+        <p class="journey-rail__eyebrow">AQUIRA JOURNEY <span>3つの公式サイトをめぐる</span></p>
+        <ol class="journey-rail__list"><li class="journey-rail__item"><a class="journey-rail__link" href="https://www.aquira.art/" aria-label="第1章 作品と出会う — 作品・表現（現在地）" aria-current="step"><span class="journey-rail__number" aria-hidden="true">01</span><span class="journey-rail__chapter">作品と出会う</span><span class="journey-rail__destination">作品・表現</span><span class="journey-rail__current">現在地</span></a></li><li class="journey-rail__item"><a class="journey-rail__link" href="https://www.aquira1978.com/" aria-label="第2章 起点をたどる — 起点・記録"><span class="journey-rail__number" aria-hidden="true">02</span><span class="journey-rail__chapter">起点をたどる</span><span class="journey-rail__destination">起点・記録</span></a></li><li class="journey-rail__item"><a class="journey-rail__link" href="https://www.aquira.org/" aria-label="第3章 対話へひらく — 公共的実践"><span class="journey-rail__number" aria-hidden="true">03</span><span class="journey-rail__chapter">対話へひらく</span><span class="journey-rail__destination">公共的実践</span></a></li></ol>
+      </div>
+    </nav>
     <main id="main-content">
   <section class="hero" aria-labelledby="hero-title">
     <p class="eyebrow">AQUIRA · YOKOHAMA, JAPAN</p>
@@ -127,7 +135,7 @@
   <section class="section section--muted" aria-labelledby="official-network-title">
     <div class="section__heading"><p class="eyebrow">OFFICIAL ECOSYSTEM</p><h2 id="official-network-title">作品・記録・公共的実践を、ひとつの文脈で。</h2></div>
     <p class="statement">Aquiraの公式情報は、現在の作品、名称と歩みの記録、社会と交わる実践という3つの入口で構成されています。各サイトは異なる役割を持ちますが、公式情報の起点と最新の作家プロフィールはこのサイトで確認できます。</p>
-    <div class="official-network-grid"><article class="official-network-card"><a class="official-network-card__link" href="https://www.aquira.art/" aria-label="作品・表現のホームページを開く"><p class="official-network-card__number">01</p><p class="official-network-card__role">OFFICIAL ARTIST HOME</p><h3>作品・表現</h3><p>作家プロフィール、作品、制作、協働・利用許諾に関する公式情報。</p><span class="text-link official-network-card__cta">このサイトを見る <span aria-hidden="true">→</span></span></a></article><article class="official-network-card"><a class="official-network-card__link" href="https://www.aquira1978.com/" rel="external noopener noreferrer" aria-label="起点・記録のホームページを開く"><p class="official-network-card__number">02</p><p class="official-network-card__role">ORIGIN &amp; ARCHIVE</p><h3>起点・記録</h3><p>名称の由来、来歴、アーカイブ、ブランド利用に関する記録。</p><span class="text-link official-network-card__cta">公式サイトを見る <span aria-hidden="true">→</span></span></a></article><article class="official-network-card"><a class="official-network-card__link" href="https://www.aquira.org/" rel="external noopener noreferrer" aria-label="公共的実践のホームページを開く"><p class="official-network-card__number">03</p><p class="official-network-card__role">PROJECTS &amp; DIALOGUE</p><h3>公共的実践</h3><p>対話、協働、社会と交わるプロジェクトの記録と入口。</p><span class="text-link official-network-card__cta">公式サイトを見る <span aria-hidden="true">→</span></span></a></article></div>
+    <div class="official-network-grid"><article class="official-network-card official-network-card--current" data-chapter-card data-journey-step="01" data-journey-current><a class="official-network-card__link" href="https://www.aquira.art/" aria-label="作品・表現のホームページを開く"><p class="official-network-card__number">01</p><p class="official-network-card__chapter">CHAPTER 01 · 作品と出会う <span>現在地</span></p><p class="official-network-card__role">OFFICIAL ARTIST HOME</p><h3>作品・表現</h3><p>作家プロフィール、作品、制作、協働・利用許諾に関する公式情報。</p><span class="text-link official-network-card__cta">このサイトを見る <span aria-hidden="true">→</span></span></a></article><article class="official-network-card" data-chapter-card data-journey-step="02"><a class="official-network-card__link" href="https://www.aquira1978.com/" rel="external noopener noreferrer" aria-label="起点・記録のホームページを開く"><p class="official-network-card__number">02</p><p class="official-network-card__chapter">CHAPTER 02 · 起点をたどる</p><p class="official-network-card__role">ORIGIN &amp; ARCHIVE</p><h3>起点・記録</h3><p>名称の由来、来歴、アーカイブ、ブランド利用に関する記録。</p><span class="text-link official-network-card__cta">公式サイトを見る <span aria-hidden="true">→</span></span></a></article><article class="official-network-card" data-chapter-card data-journey-step="03"><a class="official-network-card__link" href="https://www.aquira.org/" rel="external noopener noreferrer" aria-label="公共的実践のホームページを開く"><p class="official-network-card__number">03</p><p class="official-network-card__chapter">CHAPTER 03 · 対話へひらく</p><p class="official-network-card__role">PROJECTS &amp; DIALOGUE</p><h3>公共的実践</h3><p>対話、協働、社会と交わるプロジェクトの記録と入口。</p><span class="text-link official-network-card__cta">公式サイトを見る <span aria-hidden="true">→</span></span></a></article></div>
     <a class="text-link" href="/official-network/">3つの公式サイトの関係を見る</a>
   </section>
   <section class="section section--contact" aria-labelledby="contact-title">

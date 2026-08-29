@@ -5,6 +5,58 @@
  * 展示歴・受賞歴・協働先・数値実績、商標登録・侵害・料金は一次資料が確認できるまで追加しない。
  */
 
+const journey = {
+  stage: "art",
+  currentStep: "01",
+  japanese: {
+    ariaLabel: "AQUIRAをめぐる3章",
+    eyebrow: "AQUIRA JOURNEY",
+    eyebrowDetail: "3つの公式サイトをめぐる",
+    current: "現在地",
+    steps: [
+      {
+        number: "01",
+        chapter: "作品と出会う",
+        destination: "作品・表現",
+        href: "https://www.aquira.art/",
+        ariaLabel: "第1章 作品と出会う — 作品・表現（現在地）",
+        role: "OFFICIAL ARTIST HOME",
+        description: "作家プロフィール、作品、制作、協働・利用許諾に関する公式情報。",
+        internal: true,
+      },
+      {
+        number: "02",
+        chapter: "起点をたどる",
+        destination: "起点・記録",
+        href: "https://www.aquira1978.com/",
+        ariaLabel: "第2章 起点をたどる — 起点・記録",
+        role: "ORIGIN & ARCHIVE",
+        description: "名称の由来、来歴、アーカイブ、ブランド利用に関する記録。",
+      },
+      {
+        number: "03",
+        chapter: "対話へひらく",
+        destination: "公共的実践",
+        href: "https://www.aquira.org/",
+        ariaLabel: "第3章 対話へひらく — 公共的実践",
+        role: "PROJECTS & DIALOGUE",
+        description: "対話、協働、社会と交わるプロジェクトの記録と入口。",
+      },
+    ],
+  },
+  english: {
+    ariaLabel: "Three chapters of AQUIRA",
+    eyebrow: "AQUIRA JOURNEY",
+    eyebrowDetail: "Explore the three official sites",
+    current: "Current chapter",
+    steps: [
+      { chapter: "Encounter the Work", destination: "Works & Expression", ariaLabel: "Chapter 01: Encounter the Work — Works & Expression (Current chapter)" },
+      { chapter: "Trace the Origin", destination: "Origin & Archive", ariaLabel: "Chapter 02: Trace the Origin — Origin & Archive" },
+      { chapter: "Open to Dialogue", destination: "Public Practice", ariaLabel: "Chapter 03: Open to Dialogue — Public Practice" },
+    ],
+  },
+};
+
 const siteContent = {
   site: {
     origin: "https://www.aquira.art",
@@ -40,6 +92,8 @@ const siteContent = {
     { label: "作品", href: "/works/" },
     { label: "活動と協働", href: "/practice/" },
   ],
+
+  journey,
 
   hero: {
     eyebrow: "AQUIRA · YOKOHAMA, JAPAN",
@@ -100,27 +154,13 @@ const siteContent = {
       "Aquiraの公式情報は、現在の作品、名称と歩みの記録、社会と交わる実践という3つの入口で構成されています。各サイトは異なる役割を持ちますが、公式情報の起点と最新の作家プロフィールはこのサイトで確認できます。",
     href: "/official-network/",
     label: "3つの公式サイトの関係を見る",
-    links: [
-      {
-        label: "作品・表現",
-        role: "OFFICIAL ARTIST HOME",
-        description: "作家プロフィール、作品、制作、協働・利用許諾に関する公式情報。",
-        href: "https://www.aquira.art/",
-        internal: true,
-      },
-      {
-        label: "起点・記録",
-        role: "ORIGIN & ARCHIVE",
-        description: "名称の由来、来歴、アーカイブ、ブランド利用に関する記録。",
-        href: "https://www.aquira1978.com/",
-      },
-      {
-        label: "公共的実践",
-        role: "PROJECTS & DIALOGUE",
-        description: "対話、協働、社会と交わるプロジェクトの記録と入口。",
-        href: "https://www.aquira.org/",
-      },
-    ],
+    links: journey.japanese.steps.map(({ destination, role, description, href, internal }) => ({
+      label: destination,
+      role,
+      description,
+      href,
+      internal,
+    })),
   },
 
   practice: {

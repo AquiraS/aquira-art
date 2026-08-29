@@ -1,0 +1,198 @@
+/* AQUIRA JOURNEY: an editorial route across the three official sites. */
+.journey-rail {
+  border-bottom: 1px solid var(--color-rule);
+  background: var(--color-paper);
+}
+
+.journey-rail__inner {
+  max-width: 80rem;
+  padding: 1rem var(--page-gutter) 0.85rem;
+}
+
+.journey-rail__eyebrow {
+  margin: 0 0 0.65rem;
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+}
+
+.journey-rail__eyebrow span {
+  margin-left: 0.55rem;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+.journey-rail__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-ink);
+  list-style: none;
+}
+
+.journey-rail__item + .journey-rail__item {
+  border-left: 1px solid var(--color-rule);
+}
+
+.journey-rail__link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: 0.65rem;
+  align-items: baseline;
+  min-height: 4rem;
+  padding: 0.7rem 1rem 0.7rem 0;
+  color: inherit;
+  font-family: var(--font-ui);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+  transition: color var(--interaction-duration) var(--interaction-easing);
+}
+
+.journey-rail__item + .journey-rail__item .journey-rail__link {
+  padding-left: 1rem;
+}
+
+.journey-rail__number,
+.journey-rail__current {
+  color: var(--color-accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.journey-rail__chapter {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.journey-rail__destination {
+  grid-column: 2 / -1;
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+}
+
+.journey-rail__current {
+  grid-column: 3;
+  grid-row: 1;
+  padding: 0.15rem 0.35rem;
+  border: 1px solid currentColor;
+  font-size: 0.6rem;
+  white-space: nowrap;
+}
+
+.journey-rail__link:hover,
+.journey-rail__link:focus-visible {
+  color: var(--color-accent);
+}
+
+.journey-rail__link:hover .journey-rail__destination,
+.journey-rail__link:focus-visible .journey-rail__destination {
+  color: inherit;
+}
+
+.official-network-card__chapter {
+  margin: 0 0 0.75rem;
+  color: var(--color-accent) !important;
+  font-family: var(--font-ui);
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+}
+
+.official-network-card__chapter span {
+  margin-left: 0.35rem;
+  padding: 0.12rem 0.3rem;
+  border: 1px solid currentColor;
+  font-size: 0.62rem;
+  white-space: nowrap;
+}
+
+.official-network-card--current {
+  background: color-mix(in srgb, var(--color-accent) 7%, transparent);
+}
+
+@keyframes journey-arrival {
+  from {
+    opacity: 0.86;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.journey-arrived .journey-rail__item {
+  animation: journey-arrival 420ms ease-out both;
+}
+
+.journey-arrived .journey-rail__item:nth-child(2) {
+  animation-delay: 45ms;
+}
+
+.journey-arrived .journey-rail__item:nth-child(3) {
+  animation-delay: 90ms;
+}
+
+@media (max-width: 700px) {
+  .journey-rail__inner {
+    padding-block: 0.85rem;
+  }
+
+  .journey-rail__list {
+    grid-template-columns: 1fr;
+  }
+
+  .journey-rail__item + .journey-rail__item {
+    border-top: 1px solid var(--color-rule);
+    border-left: 0;
+  }
+
+  .journey-rail__link,
+  .journey-rail__item + .journey-rail__item .journey-rail__link {
+    min-height: 2.75rem;
+    padding: 0.65rem 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-arrived .journey-rail__item {
+    animation: none;
+    transform: none;
+  }
+}
+
+.a11y-reduce-motion .journey-rail__item,
+.a11y-reduce-motion .journey-rail__link {
+  animation: none !important;
+  transition-delay: 0s !important;
+  transform: none !important;
+}
+
+@media (forced-colors: active) {
+  .journey-rail,
+  .journey-rail__list,
+  .journey-rail__item + .journey-rail__item,
+  .journey-rail__current,
+  .official-network-card__chapter span {
+    border-color: CanvasText;
+  }
+
+  .journey-rail__link:focus-visible {
+    outline-color: Highlight;
+  }
+
+  .official-network-card--current {
+    background: Canvas;
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+}
