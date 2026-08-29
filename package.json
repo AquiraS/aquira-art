@@ -5,6 +5,7 @@
   "scripts": {
     "build": "node scripts/build-site.mjs",
     "validate": "node scripts/validate-seo-output.mjs",
-    "test": "npm run build && npm run validate"
+    "validate:links": "node scripts/validate-links.mjs",
+    "test": "npm run build && npm run validate && npm run validate:links"
   }
 }

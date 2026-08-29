@@ -339,7 +339,7 @@ const siteContent = {
         paragraphs: ["電話番号の開示請求があった場合には、遅滞なく電子メール等により開示いたします。"],
       },
       { label: "メールアドレス", paragraphs: ["aquirae@me.com"], href: "mailto:aquirae@me.com" },
-      { label: "販売URL", paragraphs: ["https://aquira.art/"], href: "https://aquira.art/" },
+      { label: "販売URL", paragraphs: ["https://www.aquira.art/"], href: "https://www.aquira.art/" },
       { label: "販売価格", paragraphs: ["各商品ページに表示された価格（税込）"] },
       {
         label: "商品代金以外の必要料金",
