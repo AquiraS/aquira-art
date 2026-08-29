@@ -13,7 +13,7 @@ const projectDirectory = path.resolve(scriptDirectory, "..");
 const contentPath = pathToFileURL(path.join(projectDirectory, "content", "site-content.js"));
 const { default: content } = await import(`${contentPath.href}?updated=${Date.now()}`);
 const buildDate = "2026-08-29";
-const assetVersion = "20260828";
+const assetVersion = "20260829";
 
 function escapeHtml(value) {
   return String(value)
@@ -59,6 +59,24 @@ function renderHeader({ language = "ja", pathname = "/" } = {}) {
       <a class="site-header__contact" href="${escapeHtml(content.contact.href)}">${escapeHtml(contactLabel)}</a>
     </header>`;
 }
+
+function renderJourneyRail({ language = "ja" } = {}) {
+  const localized = language === "en" ? content.journey.english : content.journey.japanese;
+  return `
+    <nav class="journey-rail" aria-label="${escapeHtml(localized.ariaLabel)}">
+      <div class="journey-rail__inner">
+        <p class="journey-rail__eyebrow">${escapeHtml(localized.eyebrow)} <span>${escapeHtml(localized.eyebrowDetail)}</span></p>
+        <ol class="journey-rail__list">${content.journey.japanese.steps
+          .map((step, index) => {
+            const copy = localized.steps[index];
+            const isCurrent = step.number === content.journey.currentStep;
+            return `<li class="journey-rail__item"><a class="journey-rail__link" href="${escapeHtml(step.href)}" aria-label="${escapeHtml(copy.ariaLabel)}"${isCurrent ? ' aria-current="step"' : ""}><span class="journey-rail__number" aria-hidden="true">${escapeHtml(step.number)}</span><span class="journey-rail__chapter">${escapeHtml(copy.chapter)}</span><span class="journey-rail__destination">${escapeHtml(copy.destination)}</span>${isCurrent ? `<span class="journey-rail__current">${escapeHtml(localized.current)}</span>` : ""}</a></li>`;
+          })
+          .join("")}</ol>
+      </div>
+    </nav>`;
+}
+
 function renderFooter() {
   const socialLinks = content.entity.sameAs
     .map((url) => `<li><a href="${escapeHtml(url)}" rel="me noopener" target="_blank">${escapeHtml(new URL(url).hostname.replace("www.", ""))}</a></li>`)
@@ -147,6 +165,7 @@ function renderHead({ pathname, title, description, schema, language = "ja" }) {
       ${renderLanguageAlternates(pathname)}
       <link rel="stylesheet" href="/styles.css?v=${assetVersion}" />
       <script src="/accessibility.js?v=${assetVersion}" defer></script>
+      <script src="/journey.js?v=${assetVersion}" defer></script>
       <meta property="og:locale" content="${isEnglish ? "en_US" : "ja_JP"}" />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="${escapeHtml(content.site.name)}" />
@@ -183,9 +202,10 @@ function renderLayout({ pathname, title, description, schema, main, language = "
 <!-- AQUIRA style: Artist Evidence Atlas — visible facts, clear hierarchy, generous editorial whitespace. -->
 <html lang="${escapeHtml(language)}">
   ${renderHead({ pathname, title, description, schema, language })}
-  <body>
+  <body data-journey-stage="${escapeHtml(content.journey.stage)}">
     <a class="skip-link" href="#main-content">${escapeHtml(skipLabel)}</a>
     ${renderHeader({ language, pathname })}
+    ${renderJourneyRail({ language })}
     <main id="main-content">${main}</main>
     ${renderFooter()}
     ${renderAccessibilityTools({ language })}
@@ -212,12 +232,21 @@ function renderWorkCards(items) {
     .join("")}</div>`;
 }
 
-function renderOfficialNetworkCards() {
+function renderOfficialNetworkCards({ chapterCards = false } = {}) {
   return `<div class="official-network-grid">${content.officialNetwork.links
     .map((item, index) => {
+      const journeyStep = content.journey.japanese.steps[index];
+      const isCurrent = journeyStep.number === content.journey.currentStep;
       const linkText = item.internal ? "このサイトを見る" : "公式サイトを見る";
       const ariaLabel = `${item.label}のホームページを開く`;
-      return `<article class="official-network-card"><a class="official-network-card__link" href="${escapeHtml(item.href)}"${item.internal ? "" : ' rel="external noopener noreferrer"'} aria-label="${escapeHtml(ariaLabel)}"><p class="official-network-card__number">0${index + 1}</p><p class="official-network-card__role">${escapeHtml(item.role)}</p><h3>${escapeHtml(item.label)}</h3><p>${escapeHtml(item.description)}</p><span class="text-link official-network-card__cta">${escapeHtml(linkText)} <span aria-hidden="true">→</span></span></a></article>`;
+      const articleAttributes = chapterCards
+        ? ` data-chapter-card data-journey-step="${escapeHtml(journeyStep.number)}"${isCurrent ? ' data-journey-current' : ""}`
+        : "";
+      const className = `official-network-card${chapterCards && isCurrent ? " official-network-card--current" : ""}`;
+      const chapter = chapterCards
+        ? `<p class="official-network-card__chapter">CHAPTER ${escapeHtml(journeyStep.number)} · ${escapeHtml(journeyStep.chapter)}${isCurrent ? ` <span>${escapeHtml(content.journey.japanese.current)}</span>` : ""}</p>`
+        : "";
+      return `<article class="${className}"${articleAttributes}><a class="official-network-card__link" href="${escapeHtml(item.href)}"${item.internal ? "" : ' rel="external noopener noreferrer"'} aria-label="${escapeHtml(ariaLabel)}"><p class="official-network-card__number">0${index + 1}</p>${chapter}<p class="official-network-card__role">${escapeHtml(item.role)}</p><h3>${escapeHtml(item.label)}</h3><p>${escapeHtml(item.description)}</p><span class="text-link official-network-card__cta">${escapeHtml(linkText)} <span aria-hidden="true">→</span></span></a></article>`;
     })
     .join("")}</div>`;
 }
@@ -283,7 +312,7 @@ const homeMain = `
   <section class="section section--muted" aria-labelledby="official-network-title">
     ${renderSectionHeading(content.officialNetwork.eyebrow, content.officialNetwork.title, "official-network-title")}
     <p class="statement">${escapeHtml(content.officialNetwork.summary)}</p>
-    ${renderOfficialNetworkCards()}
+    ${renderOfficialNetworkCards({ chapterCards: true })}
     <a class="text-link" href="${escapeHtml(content.officialNetwork.href)}">${escapeHtml(content.officialNetwork.label)}</a>
   </section>
   <section class="section section--contact" aria-labelledby="contact-title">

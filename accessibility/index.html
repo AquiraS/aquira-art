@@ -14,8 +14,9 @@
 
       <link rel="alternate" href="https://www.aquira.art/accessibility/" hreflang="ja" />
       <link rel="alternate" href="https://www.aquira.art/accessibility/" hreflang="x-default" />
-      <link rel="stylesheet" href="/styles.css?v=20260828" />
-      <script src="/accessibility.js?v=20260828" defer></script>
+      <link rel="stylesheet" href="/styles.css?v=20260829" />
+      <script src="/accessibility.js?v=20260829" defer></script>
+      <script src="/journey.js?v=20260829" defer></script>
       <meta property="og:locale" content="ja_JP" />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="Aquira（アキラ）" />
@@ -85,7 +86,7 @@
   ]
 }</script>
     </head>
-  <body>
+  <body data-journey-stage="art">
     <a class="skip-link" href="#main-content">本文へ移動</a>
 
     <header class="site-header">
@@ -97,6 +98,13 @@
       </nav>
       <a class="site-header__contact" href="mailto:aquirae@me.com">お問い合わせ</a>
     </header>
+
+    <nav class="journey-rail" aria-label="AQUIRAをめぐる3章">
+      <div class="journey-rail__inner">
+        <p class="journey-rail__eyebrow">AQUIRA JOURNEY <span>3つの公式サイトをめぐる</span></p>
+        <ol class="journey-rail__list"><li class="journey-rail__item"><a class="journey-rail__link" href="https://www.aquira.art/" aria-label="第1章 作品と出会う — 作品・表現（現在地）" aria-current="step"><span class="journey-rail__number" aria-hidden="true">01</span><span class="journey-rail__chapter">作品と出会う</span><span class="journey-rail__destination">作品・表現</span><span class="journey-rail__current">現在地</span></a></li><li class="journey-rail__item"><a class="journey-rail__link" href="https://www.aquira1978.com/" aria-label="第2章 起点をたどる — 起点・記録"><span class="journey-rail__number" aria-hidden="true">02</span><span class="journey-rail__chapter">起点をたどる</span><span class="journey-rail__destination">起点・記録</span></a></li><li class="journey-rail__item"><a class="journey-rail__link" href="https://www.aquira.org/" aria-label="第3章 対話へひらく — 公共的実践"><span class="journey-rail__number" aria-hidden="true">03</span><span class="journey-rail__chapter">対話へひらく</span><span class="journey-rail__destination">公共的実践</span></a></li></ol>
+      </div>
+    </nav>
     <main id="main-content">
   <section class="hero hero--compact" aria-labelledby="accessibility-title">
     <p class="eyebrow">ACCESSIBILITY</p>
