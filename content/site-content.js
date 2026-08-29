@@ -131,6 +131,8 @@ const siteContent = {
         title: "Photography",
         description:
           "人物、都市、風景を通して、光と場所に宿る静かな物語を写し取ります。",
+        href: "https://www.viewbug.com/member/Aquira#/",
+        external: true,
       },
       {
         number: "02",
