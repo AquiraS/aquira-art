@@ -84,11 +84,12 @@ function renderFooter() {
   const officialLinks = content.officialNetwork.links
     .map((item) => `<li><a href="${escapeHtml(item.href)}"${item.internal ? "" : ' target="_blank" rel="noopener noreferrer"'}>${escapeHtml(item.label)}</a></li>`)
     .join("");
+  const newsLink = `<li><a href="${escapeHtml(content.footer.news.href)}" target="_blank" rel="external noopener noreferrer" aria-label="${escapeHtml(`${content.footer.news.label}を新しいタブで開く`)}">${escapeHtml(content.footer.news.label)}</a></li>`;
   return `
     <footer class="site-footer">
       <div class="site-footer__identity"><p class="site-footer__title">${escapeHtml(content.footer.title)}</p><p class="site-footer__description">${escapeHtml(content.footer.description)}</p></div>
       <nav class="site-footer__network" aria-label="Aquira公式エコシステム"><p>公式エコシステム</p><ul>${officialLinks}</ul></nav>
-      <nav class="site-footer__links" aria-label="公式プロフィール・法定情報・お問い合わせ"><ul><li><a href="/accessibility/">アクセシビリティ</a></li><li><a href="${escapeHtml(content.footer.legalNotice.href)}">${escapeHtml(content.footer.legalNotice.label)}</a></li><li><a href="${escapeHtml(content.contact.href)}">${escapeHtml(content.contact.label)}</a></li>${socialLinks}</ul></nav>
+      <nav class="site-footer__links" aria-label="公式プロフィール・法定情報・お問い合わせ"><ul>${newsLink}<li><a href="/accessibility/">アクセシビリティ</a></li><li><a href="${escapeHtml(content.footer.legalNotice.href)}">${escapeHtml(content.footer.legalNotice.label)}</a></li><li><a href="${escapeHtml(content.contact.href)}">${escapeHtml(content.contact.label)}</a></li>${socialLinks}</ul></nav>
       <p class="site-footer__meta">公式情報の最終更新: <time datetime="${buildDate}">${buildDate}</time></p>
     </footer>`;
 }

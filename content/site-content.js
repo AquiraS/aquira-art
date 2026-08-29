@@ -421,6 +421,7 @@ const siteContent = {
   footer: {
     title: "Aquira（アキラ）",
     description: "写真・オーディオビジュアル・現代アート — 横浜・日本",
+    news: { label: "News", href: "https://note.com/aquira" },
     legalNotice: { label: "特定商取引法に基づく表記", href: "/tokushoho/" },
   },
 };
