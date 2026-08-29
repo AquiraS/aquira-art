@@ -97,13 +97,29 @@ const siteContent = {
     eyebrow: "OFFICIAL ECOSYSTEM",
     title: "作品・記録・公共的実践を、ひとつの文脈で。",
     summary:
-      "Aquiraの公式情報は、現在の作品、名称と歩みの記録、社会と交わる実践という3つの入口で構成されています。",
+      "Aquiraの公式情報は、現在の作品、名称と歩みの記録、社会と交わる実践という3つの入口で構成されています。各サイトは異なる役割を持ちますが、公式情報の起点と最新の作家プロフィールはこのサイトで確認できます。",
     href: "/official-network/",
     label: "3つの公式サイトの関係を見る",
     links: [
-      { label: "作品・表現", description: "作家プロフィール、作品、制作、協働・利用許諾。", href: "https://www.aquira.art/", internal: true },
-      { label: "起点・記録", description: "名称の由来、来歴、アーカイブ、ブランド利用に関する記録。", href: "https://www.aquira1978.com/" },
-      { label: "公共的実践", description: "対話、協働、社会と交わるプロジェクトの記録と入口。", href: "https://www.aquira.org/" },
+      {
+        label: "作品・表現",
+        role: "OFFICIAL ARTIST HOME",
+        description: "作家プロフィール、作品、制作、協働・利用許諾に関する公式情報。",
+        href: "https://www.aquira.art/",
+        internal: true,
+      },
+      {
+        label: "起点・記録",
+        role: "ORIGIN & ARCHIVE",
+        description: "名称の由来、来歴、アーカイブ、ブランド利用に関する記録。",
+        href: "https://www.aquira1978.com/",
+      },
+      {
+        label: "公共的実践",
+        role: "PROJECTS & DIALOGUE",
+        description: "対話、協働、社会と交わるプロジェクトの記録と入口。",
+        href: "https://www.aquira.org/",
+      },
     ],
   },
 
@@ -273,6 +289,16 @@ const siteContent = {
       question: "CRM製品のAquiraと同じですか？",
       answer:
         "いいえ。本サイトのAquira（アキラ）は、横浜を拠点とする写真家・オーディオビジュアル・現代アーティストに関する公式サイトです。放送業界向けのCRM・広告販売支援製品とは別の存在です。",
+    },
+    {
+      question: "Aquiraの公式サイトはどれですか？",
+      answer:
+        "Aquiraの公式サイトは、作品・表現を扱うaquira.art、起点・記録を扱うaquira1978.com、対話・協働・社会と交わるプロジェクトを扱うaquira.orgで構成されています。最新の作家プロフィール、作品、利用許諾・協働に関する公式情報はaquira.artで確認できます。",
+    },
+    {
+      question: "3つのサイトはどのように使い分けられていますか？",
+      answer:
+        "aquira.artは作品と作家情報、aquira1978.comは名称と歩みの記録、aquira.orgは対話と協働のプロジェクトを扱います。各サイトの目的に合わない情報や未確認の事実は掲載せず、相互に役割を明示して案内します。",
     },
   ],
 
