@@ -10,6 +10,7 @@ const officialHomepages = [
   { label: "公共的実践", href: "https://www.aquira.org/" },
 ];
 const photographyGallery = "https://www.viewbug.com/member/Aquira#/";
+const newsLink = '<a href="https://note.com/aquira" target="_blank" rel="external noopener noreferrer" aria-label="Newsを新しいタブで開く">News</a>';
 const officialDomains = new Set(["aquira.art", "aquira1978.com", "aquira.org"]);
 const skippedDirectories = new Set([".git", "node_modules"]);
 
@@ -86,6 +87,10 @@ for (const absolutePage of pages) {
     if (!footerLinks.some((link) => link.label === label && link.href === href)) {
       throw new Error(`${page}: official ecosystem footer must map ${label} to ${href}`);
     }
+  }
+  const footer = html.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0];
+  if (!footer || footer.split(newsLink).length - 1 !== 1 || html.split(newsLink).length - 1 !== 1) {
+    throw new Error(`${page}: footer must contain exactly one canonical News link to https://note.com/aquira`);
   }
 
   const anchors = [...html.matchAll(/<a\b([^>]*)>/gi)];
