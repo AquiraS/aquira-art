@@ -133,6 +133,7 @@ const siteContent = {
           "人物、都市、風景を通して、光と場所に宿る静かな物語を写し取ります。",
         href: "https://www.viewbug.com/member/Aquira#/",
         external: true,
+        externalLabel: "ViewBugギャラリー",
       },
       {
         number: "02",
@@ -145,6 +146,9 @@ const siteContent = {
         title: "Digital Practice",
         description:
           "テクノロジーを、表現と対話の可能性を広げるための道具として活用します。",
+        href: "https://www.youtube.com/@aquira_studio",
+        external: true,
+        externalLabel: "YouTubeチャンネル",
       },
     ],
   },
