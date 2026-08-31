@@ -650,7 +650,7 @@ h3 {
   isolation: isolate;
   width: 100%;
   max-width: none;
-  min-height: clamp(40rem, 72svh, 56rem);
+  min-height: clamp(32rem, 66svh, 50rem);
   padding: clamp(2rem, 5vw, 4rem) var(--page-gutter);
   align-content: end;
   overflow: hidden;
@@ -705,7 +705,7 @@ h3 {
 .hero--visual .button--secondary:focus-visible { background: rgba(255, 255, 255, .16); color: #ffffff; }
 @media (max-width: 700px) {
   .hero.hero--visual {
-    min-height: clamp(38rem, 78svh, 47rem);
+    min-height: clamp(34rem, 74svh, 44rem);
     padding: 1.75rem var(--page-gutter) 2rem;
   }
   .hero--visual .hero__image { object-position: 62% 48%; }
