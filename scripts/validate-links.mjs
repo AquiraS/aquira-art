@@ -122,7 +122,7 @@ for (const absolutePage of pages) {
   }
 }
 
-for (const file of ["index.html", "official-network/index.html"]) {
+for (const file of ["official-network/index.html"]) {
   const html = await readFile(path.join(root, file), "utf8");
   const cards = [...html.matchAll(/<a class="official-network-card__link" href="([^"]+)"[^>]*>[\s\S]*?<h3>([^<]+)<\/h3>[\s\S]*?<\/a>/g)]
     .map((match) => ({ href: match[1], label: match[2] }));

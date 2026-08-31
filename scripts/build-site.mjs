@@ -13,7 +13,7 @@ const projectDirectory = path.resolve(scriptDirectory, "..");
 const contentPath = pathToFileURL(path.join(projectDirectory, "content", "site-content.js"));
 const { default: content } = await import(`${contentPath.href}?updated=${Date.now()}`);
 const buildDate = "2026-08-31";
-const assetVersion = "20260831";
+const assetVersion = "20260831a";
 
 function escapeHtml(value) {
   return String(value)
@@ -60,28 +60,11 @@ function renderHeader({ language = "ja", pathname = "/" } = {}) {
     </header>`;
 }
 
-function renderJourneyRail({ language = "ja" } = {}) {
-  const localized = language === "en" ? content.journey.english : content.journey.japanese;
-  return `
-    <nav class="journey-rail" aria-label="${escapeHtml(localized.ariaLabel)}">
-      <div class="journey-rail__inner">
-        <p class="journey-rail__eyebrow">${escapeHtml(localized.eyebrow)} <span>${escapeHtml(localized.eyebrowDetail)}</span></p>
-        <ol class="journey-rail__list">${content.journey.japanese.steps
-          .map((step, index) => {
-            const copy = localized.steps[index];
-            const isCurrent = step.number === content.journey.currentStep;
-            return `<li class="journey-rail__item"><a class="journey-rail__link" href="${escapeHtml(step.href)}" aria-label="${escapeHtml(copy.ariaLabel)}"${isCurrent ? ' aria-current="step"' : ""}><span class="journey-rail__number" aria-hidden="true">${escapeHtml(step.number)}</span><span class="journey-rail__chapter">${escapeHtml(copy.chapter)}</span><span class="journey-rail__destination">${escapeHtml(copy.destination)}</span>${isCurrent ? `<span class="journey-rail__current">${escapeHtml(localized.current)}</span>` : ""}</a></li>`;
-          })
-          .join("")}</ol>
-      </div>
-    </nav>`;
-}
-
 function renderFooter() {
   const socialLinks = content.entity.sameAs
     .map((url) => `<li><a href="${escapeHtml(url)}" rel="me noopener" target="_blank">${escapeHtml(new URL(url).hostname.replace("www.", ""))}</a></li>`)
     .join("");
-  const officialLinks = content.officialNetwork.links
+  const officialLinks = [{ label: "公式サイトの関係", href: content.officialNetwork.href, internal: true }, ...content.officialNetwork.links]
     .map((item) => `<li><a href="${escapeHtml(item.href)}"${item.internal ? "" : ' target="_blank" rel="noopener noreferrer"'}>${escapeHtml(item.label)}</a></li>`)
     .join("");
   const newsLink = `<li><a href="${escapeHtml(content.footer.news.href)}" target="_blank" rel="external noopener noreferrer" aria-label="${escapeHtml(`${content.footer.news.label}を新しいタブで開く`)}">${escapeHtml(content.footer.news.label)}</a></li>`;
@@ -167,7 +150,6 @@ ${pathname === "/" || pathname === "/en/" ? `      <link rel="preload" as="image
       ${renderLanguageAlternates(pathname)}
       <link rel="stylesheet" href="/styles.css?v=${assetVersion}" />
       <script src="/accessibility.js?v=${assetVersion}" defer></script>
-      <script src="/journey.js?v=${assetVersion}" defer></script>
       <meta property="og:locale" content="${isEnglish ? "en_US" : "ja_JP"}" />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="${escapeHtml(content.site.name)}" />
@@ -213,7 +195,6 @@ function renderLayout({ pathname, title, description, schema, main, language = "
   <body data-journey-stage="${escapeHtml(content.journey.stage)}">
     <a class="skip-link" href="#main-content">${escapeHtml(skipLabel)}</a>
     ${renderHeader({ language, pathname })}
-    ${renderJourneyRail({ language })}
     <main id="main-content">${main}</main>
     ${renderFooter()}
     ${renderAccessibilityTools({ language })}
@@ -307,10 +288,7 @@ const homeMain = `
       <p class="eyebrow">${escapeHtml(content.hero.eyebrow)}</p>
       <h1 id="hero-title">${escapeHtml(content.hero.title)}</h1>
       <p class="lead">${escapeHtml(content.hero.description)}</p>
-      <div class="hero__actions">
-        <a class="button button--primary" href="${escapeHtml(content.hero.button.href)}">${escapeHtml(content.hero.button.label)}</a>
-        <a class="button button--secondary" href="${escapeHtml(content.contact.href)}">${escapeHtml(content.contact.label)}</a>
-      </div>
+      <a class="button button--primary" href="${escapeHtml(content.hero.button.href)}">${escapeHtml(content.hero.button.label)}</a>
     </div>
   </section>
   <section class="section" aria-labelledby="identity-title">
@@ -328,12 +306,6 @@ const homeMain = `
     ${renderSectionHeading(content.practice.eyebrow, content.practice.title, "practice-title")}
     <p class="statement">${escapeHtml(content.practice.summary)}</p>
     <a class="text-link" href="/practice/">活動と協働について知る</a>
-  </section>
-  <section class="section section--muted" aria-labelledby="official-network-title">
-    ${renderSectionHeading(content.officialNetwork.eyebrow, content.officialNetwork.title, "official-network-title")}
-    <p class="statement">${escapeHtml(content.officialNetwork.summary)}</p>
-    ${renderOfficialNetworkCards({ chapterCards: true })}
-    <a class="text-link" href="${escapeHtml(content.officialNetwork.href)}">${escapeHtml(content.officialNetwork.label)}</a>
   </section>
   <section class="section section--contact" aria-labelledby="contact-title">
     ${renderSectionHeading(content.contact.eyebrow, content.contact.title, "contact-title")}
