@@ -6,6 +6,22 @@
   const status = document.querySelector("[data-a11y-status]");
   const closeButton = document.querySelector("[data-a11y-close]");
   const controls = [...document.querySelectorAll("[data-a11y-action]")];
+  const isEnglish = root.lang === "en";
+  const messages = isEnglish
+    ? {
+      fontSize: (percentage) => `Text size set to ${percentage}%.`,
+      contrast: (enabled) => `High-contrast display ${enabled ? "enabled" : "disabled"}.`,
+      underline: (enabled) => `Link underlining ${enabled ? "enabled" : "disabled"}.`,
+      motion: (enabled) => `Reduced motion ${enabled ? "enabled" : "disabled"}.`,
+      reset: "Display settings reset.",
+    }
+    : {
+      fontSize: (percentage) => `文字サイズを${percentage}%にしました。`,
+      contrast: (enabled) => enabled ? "高コントラスト表示を有効にしました。" : "高コントラスト表示を解除しました。",
+      underline: (enabled) => enabled ? "リンクの下線表示を有効にしました。" : "リンクの下線表示を解除しました。",
+      motion: (enabled) => enabled ? "動きを抑える設定を有効にしました。" : "動きを抑える設定を解除しました。",
+      reset: "表示設定を初期状態に戻しました。",
+    };
 
   if (!trigger || !panel || !status) return;
 
@@ -77,27 +93,27 @@
       switch (control.dataset.a11yAction) {
         case "font-increase":
           preferences.fontScale = Math.min(1.25, Number((preferences.fontScale + 0.1).toFixed(2)));
-          announce(`文字サイズを${Math.round(preferences.fontScale * 100)}%にしました。`);
+          announce(messages.fontSize(Math.round(preferences.fontScale * 100)));
           break;
         case "font-decrease":
           preferences.fontScale = Math.max(0.9, Number((preferences.fontScale - 0.1).toFixed(2)));
-          announce(`文字サイズを${Math.round(preferences.fontScale * 100)}%にしました。`);
+          announce(messages.fontSize(Math.round(preferences.fontScale * 100)));
           break;
         case "contrast":
           preferences.highContrast = !preferences.highContrast;
-          announce(preferences.highContrast ? "高コントラスト表示を有効にしました。" : "高コントラスト表示を解除しました。");
+          announce(messages.contrast(preferences.highContrast));
           break;
         case "underline":
           preferences.underlineLinks = !preferences.underlineLinks;
-          announce(preferences.underlineLinks ? "リンクの下線表示を有効にしました。" : "リンクの下線表示を解除しました。");
+          announce(messages.underline(preferences.underlineLinks));
           break;
         case "motion":
           preferences.reducedMotion = !preferences.reducedMotion;
-          announce(preferences.reducedMotion ? "動きを抑える設定を有効にしました。" : "動きを抑える設定を解除しました。");
+          announce(messages.motion(preferences.reducedMotion));
           break;
         case "reset":
           preferences = { ...defaults };
-          announce("表示設定を初期状態に戻しました。");
+          announce(messages.reset);
           break;
         default:
           return;

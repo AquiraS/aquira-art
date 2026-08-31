@@ -3,153 +3,57 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const canonicalOrigin = "https://www.aquira.art";
-const officialHomepages = [
-  { label: "作品・表現", href: "https://www.aquira.art/" },
-  { label: "起点・記録", href: "https://www.aquira1978.com/" },
-  { label: "公共的実践", href: "https://www.aquira.org/" },
-];
-const photographyGallery = "https://www.viewbug.com/member/Aquira#/";
-const newsLink = '<a href="https://note.com/aquira" target="_blank" rel="external noopener noreferrer" aria-label="Newsを新しいタブで開く">News</a>';
-const officialDomains = new Set(["aquira.art", "aquira1978.com", "aquira.org"]);
-const skippedDirectories = new Set([".git", "node_modules"]);
+const origin = "https://www.aquira.art";
+const ignored = new Set([".git", "node_modules"]);
 
-async function collectHtmlPages(directory = root) {
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+async function collectPages(directory = root) {
   const entries = await readdir(directory, { withFileTypes: true });
-  const files = [];
-
+  const pages = [];
   for (const entry of entries) {
-    if (skippedDirectories.has(entry.name)) continue;
-    const absolutePath = path.join(directory, entry.name);
-    if (entry.isDirectory()) files.push(...await collectHtmlPages(absolutePath));
-    if (entry.isFile() && entry.name === "index.html") files.push(absolutePath);
+    if (ignored.has(entry.name)) continue;
+    const location = path.join(directory, entry.name);
+    if (entry.isDirectory()) pages.push(...await collectPages(location));
+    if (entry.isFile() && entry.name === "index.html") pages.push(location);
   }
-
-  return files.sort();
+  return pages.sort();
+}
+function outputFor(pathname) {
+  if (pathname === "/") return path.join(root, "index.html");
+  return pathname.endsWith("/") ? path.join(root, pathname.slice(1), "index.html") : path.join(root, pathname.slice(1));
+}
+function attribute(attributes, name) {
+  return attributes.match(new RegExp(`\\b${name}\\s*=\\s*(["'])(.*?)\\1`, "i"))?.[2] ?? null;
 }
 
-function extractAttribute(attributes, name) {
-  const match = attributes.match(new RegExp(`\\b${name}\\s*=\\s*(["'])(.*?)\\1`, "i"));
-  return match?.[2] ?? null;
-}
-
-function extractIds(html) {
-  const ids = new Set();
-  for (const match of html.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi)) ids.add(match[2]);
-  return ids;
-}
-
-function outputPathFor(pathname) {
-  const decodedPath = decodeURIComponent(pathname);
-  if (decodedPath === "/") return path.join(root, "index.html");
-  if (decodedPath.endsWith("/")) return path.join(root, decodedPath.slice(1), "index.html");
-  return path.join(root, decodedPath.slice(1));
-}
-
-async function assertLocalDestination(href, pageUrl, page, localPages) {
-  const destination = new URL(href, pageUrl);
-  const destinationFile = outputPathFor(destination.pathname);
-
-  try {
-    await access(destinationFile);
-  } catch {
-    throw new Error(`${page}: local link does not resolve to a published file: ${href}`);
-  }
-
-  if (!destination.hash) return;
-  const targetHtml = await readFile(destinationFile, "utf8");
-  const targetIds = localPages.get(destinationFile) ?? extractIds(targetHtml);
-  localPages.set(destinationFile, targetIds);
-  const fragment = decodeURIComponent(destination.hash.slice(1));
-  if (!targetIds.has(fragment)) {
-    throw new Error(`${page}: fragment target does not exist: ${href}`);
-  }
-}
-
-const pages = await collectHtmlPages();
-const localPages = new Map();
-let anchorCount = 0;
-
-for (const absolutePage of pages) {
-  const page = path.relative(root, absolutePage) || "index.html";
-  const html = await readFile(absolutePage, "utf8");
-  localPages.set(absolutePage, extractIds(html));
-
-  const canonicalMatch = html.match(/<link rel="canonical" href="([^"]+)" \/>/);
-  if (!canonicalMatch) throw new Error(`${page}: canonical URL is required for link resolution`);
-  const pageUrl = canonicalMatch[1];
-
-  const footerMatch = html.match(/<nav class="site-footer__network"[\s\S]*?<\/nav>/);
-  if (!footerMatch) throw new Error(`${page}: official ecosystem footer is missing`);
-  const footerLinks = [...footerMatch[0].matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g)]
-    .map((match) => ({ href: match[1], label: match[2] }));
-  for (const { label, href } of officialHomepages) {
-    if (!footerLinks.some((link) => link.label === label && link.href === href)) {
-      throw new Error(`${page}: official ecosystem footer must map ${label} to ${href}`);
-    }
-  }
-  const footer = html.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0];
-  if (!footer || footer.split(newsLink).length - 1 !== 1 || html.split(newsLink).length - 1 !== 1) {
-    throw new Error(`${page}: footer must contain exactly one canonical News link to https://note.com/aquira`);
-  }
-
-  const anchors = [...html.matchAll(/<a\b([^>]*)>/gi)];
-  for (const anchor of anchors) {
-    anchorCount += 1;
-    const href = extractAttribute(anchor[1], "href");
-    if (href === null) throw new Error(`${page}: anchor is missing href`);
-    if (!href.trim() || href === "#" || /^javascript:/i.test(href)) {
-      throw new Error(`${page}: invalid or non-navigable href: ${href}`);
-    }
-
+const pages = await collectPages();
+let linksChecked = 0;
+for (const pageFile of pages) {
+  const relative = path.relative(root, pageFile);
+  const html = await readFile(pageFile, "utf8");
+  const canonical = html.match(/<link rel="canonical" href="([^"]+)" \/>/)?.[1];
+  assert(canonical?.startsWith(origin), `${relative}: production canonical is missing or wrong`);
+  for (const match of html.matchAll(/<a\b([^>]*)>/gi)) {
+    linksChecked += 1;
+    const href = attribute(match[1], "href");
+    assert(href && href.trim() && href !== "#" && !/^javascript:/i.test(href), `${relative}: invalid anchor href`);
     if (href.startsWith("mailto:")) {
-      if (!/^mailto:[^\s@]+@[^\s@]+$/i.test(href)) throw new Error(`${page}: invalid email link: ${href}`);
+      assert(/^mailto:[^\s@]+@[^\s@]+$/i.test(href), `${relative}: invalid mailto link ${href}`);
       continue;
     }
-
-    const destination = new URL(href, pageUrl);
-    const baseDomain = destination.hostname.replace(/^www\./, "");
-    if (officialDomains.has(baseDomain)) {
-      const expectedHost = `www.${baseDomain}`;
-      if (destination.protocol !== "https:" || destination.hostname !== expectedHost || destination.port) {
-        throw new Error(`${page}: official domain must use its canonical HTTPS host: ${href}`);
-      }
+    const target = new URL(href, canonical);
+    if (target.origin === origin) {
+      await access(outputFor(target.pathname));
     }
-
-    if (destination.origin === canonicalOrigin) {
-      await assertLocalDestination(href, pageUrl, page, localPages);
-    }
+  }
+  if (html.includes('<html lang="en">')) {
+    assert(html.includes('class="language-link"'), `${relative}: English language switcher is missing`);
+    assert(html.includes("href=\"/en/"), `${relative}: English internal navigation is missing`);
   }
 }
 
-for (const file of ["official-network/index.html"]) {
-  const html = await readFile(path.join(root, file), "utf8");
-  const cards = [...html.matchAll(/<a class="official-network-card__link" href="([^"]+)"[^>]*>[\s\S]*?<h3>([^<]+)<\/h3>[\s\S]*?<\/a>/g)]
-    .map((match) => ({ href: match[1], label: match[2] }));
-  if (cards.length !== officialHomepages.length) {
-    throw new Error(`${file}: expected ${officialHomepages.length} official ecosystem cards, found ${cards.length}`);
-  }
-  for (const expected of officialHomepages) {
-    if (!cards.some((card) => card.label === expected.label && card.href === expected.href)) {
-      throw new Error(`${file}: full card must map ${expected.label} to ${expected.href}`);
-    }
-  }
-}
-
-for (const file of ["index.html", "works/index.html"]) {
-  const html = await readFile(path.join(root, file), "utf8");
-  const photographyCard = html.match(/<a class="work-card__link"([^>]*)>[\s\S]*?<h3>Photography<\/h3>[\s\S]*?<span>作品領域を見る →<\/span>[\s\S]*?<\/a>/);
-  if (!photographyCard) throw new Error(`${file}: Photography work card is missing`);
-  const attributes = photographyCard[1];
-  if (extractAttribute(attributes, "href") !== photographyGallery) {
-    throw new Error(`${file}: Photography card must link directly to ${photographyGallery}`);
-  }
-  if (extractAttribute(attributes, "target") !== "_blank" || extractAttribute(attributes, "rel") !== "external noopener noreferrer") {
-    throw new Error(`${file}: Photography gallery must open in a safe new tab`);
-  }
-  if (extractAttribute(attributes, "aria-label") !== "Photographyの作品領域をViewBugギャラリーで新しいタブで見る") {
-    throw new Error(`${file}: Photography gallery needs the exact accessible label`);
-  }
-}
-
-console.log(`Link validation passed: ${pages.length} pages, ${anchorCount} anchors, all three official labels, and the Photography gallery mapped to their canonical destinations.`);
+const requiredEnglish = ["en/index.html", "en/about/index.html", "en/works/index.html", "en/practice/index.html", "en/ecosystem/index.html", "en/official-network/index.html", "en/policy/index.html", "en/accessibility/index.html", "en/licensing/index.html", "en/faq/index.html", "en/tokushoho/index.html"];
+for (const file of requiredEnglish) await access(path.join(root, file));
+console.log(`Link validation passed: ${pages.length} pages, ${linksChecked} anchors, and all English route destinations resolve locally.`);

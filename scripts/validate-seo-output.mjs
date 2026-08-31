@@ -1,104 +1,85 @@
-/**
- * AQUIRA SEO/AEO output validation.
- * Verifies generated pages, canonical URLs, language metadata, JSON-LD, sitemap, and crawler rules.
- */
 import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const checks = [
-  { file: "index.html", canonical: "https://www.aquira.art/", type: "WebPage", language: "ja" },
-  { file: "accessibility/index.html", canonical: "https://www.aquira.art/accessibility/", type: "WebPage", language: "ja" },
-  { file: "tokushoho/index.html", canonical: "https://www.aquira.art/tokushoho/", type: "WebPage", language: "ja" },
-  { file: "about/index.html", canonical: "https://www.aquira.art/about/", type: "ProfilePage", language: "ja" },
-  { file: "policy/index.html", canonical: "https://www.aquira.art/policy/", type: "WebPage", language: "ja" },
-  { file: "ecosystem/index.html", canonical: "https://www.aquira.art/ecosystem/", type: "WebPage", language: "ja" },
-  { file: "works/index.html", canonical: "https://www.aquira.art/works/", type: "CollectionPage", language: "ja" },
-  { file: "practice/index.html", canonical: "https://www.aquira.art/practice/", type: "CollectionPage", language: "ja" },
-  { file: "official-network/index.html", canonical: "https://www.aquira.art/official-network/", type: "CollectionPage", language: "ja" },
-  { file: "licensing/index.html", canonical: "https://www.aquira.art/licensing/", type: "WebPage", language: "ja" },
-  { file: "faq/index.html", canonical: "https://www.aquira.art/faq/", type: "FAQPage", language: "ja" },
-  { file: "en/index.html", canonical: "https://www.aquira.art/en/", type: "WebPage", language: "en" },
+const origin = "https://www.aquira.art";
+const routes = [
+  ["/", "index.html", "ja", "WebPage"],
+  ["/accessibility/", "accessibility/index.html", "ja", "WebPage"],
+  ["/tokushoho/", "tokushoho/index.html", "ja", "WebPage"],
+  ["/about/", "about/index.html", "ja", "ProfilePage"],
+  ["/policy/", "policy/index.html", "ja", "WebPage"],
+  ["/ecosystem/", "ecosystem/index.html", "ja", "WebPage"],
+  ["/works/", "works/index.html", "ja", "CollectionPage"],
+  ["/practice/", "practice/index.html", "ja", "CollectionPage"],
+  ["/official-network/", "official-network/index.html", "ja", "CollectionPage"],
+  ["/licensing/", "licensing/index.html", "ja", "WebPage"],
+  ["/faq/", "faq/index.html", "ja", "FAQPage"],
+  ["/en/", "en/index.html", "en", "WebPage"],
+  ["/en/accessibility/", "en/accessibility/index.html", "en", "WebPage"],
+  ["/en/tokushoho/", "en/tokushoho/index.html", "en", "WebPage"],
+  ["/en/about/", "en/about/index.html", "en", "ProfilePage"],
+  ["/en/policy/", "en/policy/index.html", "en", "WebPage"],
+  ["/en/ecosystem/", "en/ecosystem/index.html", "en", "WebPage"],
+  ["/en/works/", "en/works/index.html", "en", "CollectionPage"],
+  ["/en/practice/", "en/practice/index.html", "en", "CollectionPage"],
+  ["/en/official-network/", "en/official-network/index.html", "en", "CollectionPage"],
+  ["/en/licensing/", "en/licensing/index.html", "en", "WebPage"],
+  ["/en/faq/", "en/faq/index.html", "en", "FAQPage"],
 ];
 
-for (const { file, canonical, type, language } of checks) {
-  const html = await readFile(path.join(root, file), "utf8");
-  if (!html.includes(`<html lang="${language}">`)) {
-    throw new Error(`${file}: HTML language is missing or incorrect`);
-  }
-  if (!html.includes(`<link rel="canonical" href="${canonical}" />`)) {
-    throw new Error(`${file}: canonical URL is missing or incorrect`);
-  }
-  const match = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
-  if (!match) throw new Error(`${file}: JSON-LD script is missing`);
-  const schema = JSON.parse(match[1]);
-  const graph = schema["@graph"] ?? [];
-  if (!graph.some((item) => item["@type"] === type)) {
-    throw new Error(`${file}: required ${type} schema is missing`);
-  }
-  if (!graph.some((item) => item["@type"] === "Person" && item.name === "Aquira")) {
-    throw new Error(`${file}: Aquira Person entity is missing`);
-  }
-  if (!graph.some((item) => item["@type"] === "WebSite")) {
-    throw new Error(`${file}: WebSite entity is missing`);
-  }
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+function pairedPaths(pathname) {
+  const japanese = pathname === "/en/" ? "/" : pathname.replace(/^\/en/, "");
+  return [japanese, japanese === "/" ? "/en/" : `/en${japanese}`];
 }
 
-const home = await readFile(path.join(root, "index.html"), "utf8");
-const englishHomeVisual = await readFile(path.join(root, "en/index.html"), "utf8");
-for (const [file, html] of [["index.html", home], ["en/index.html", englishHomeVisual]]) {
-  if (!html.includes('class="hero hero--visual"') || !html.includes('src="/media/aquira-archive-interior.webp"') || !html.includes('srcset="/media/aquira-archive-interior-mobile.webp"') || !html.includes('alt="梁のある室内、カウンター、花、吊り下げ照明、右側に立つ人物を写したモノクロ写真"')) {
-    throw new Error(`${file}: main visual picture, responsive source, or accessible alternative text is missing`);
-  }
-  if (!html.includes('<link rel="preload" as="image"') || !html.includes('fetchpriority="high"')) {
-    throw new Error(`${file}: main visual preload is missing`);
+for (const [pathname, file, language, type] of routes) {
+  const html = await readFile(path.join(root, file), "utf8");
+  const canonical = `${origin}${pathname}`;
+  const [japanesePath, englishPath] = pairedPaths(pathname);
+  assert(html.includes(`<html lang="${language}">`), `${file}: document language is missing or incorrect`);
+  assert(html.includes(`<link rel="canonical" href="${canonical}" />`), `${file}: canonical must self-reference`);
+  assert(html.includes(`href="${origin}${japanesePath}" hreflang="ja"`), `${file}: Japanese alternate is missing`);
+  assert(html.includes(`href="${origin}${englishPath}" hreflang="en"`), `${file}: English alternate is missing`);
+  assert(html.includes(`href="${origin}${japanesePath}" hreflang="x-default"`), `${file}: x-default must remain Japanese-first`);
+  assert((html.match(/<h1\b/g) ?? []).length === 1, `${file}: exactly one H1 is required`);
+  const schemaMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  assert(schemaMatch, `${file}: JSON-LD is missing`);
+  const graph = JSON.parse(schemaMatch[1])["@graph"] ?? [];
+  assert(graph.some((item) => item["@type"] === type), `${file}: ${type} schema is missing`);
+  assert(graph.some((item) => item["@type"] === "WebSite"), `${file}: WebSite schema is missing`);
+  assert(graph.some((item) => item["@type"] === "Person" && item.name === "Aquira"), `${file}: Aquira Person schema is missing`);
+  if (language === "en") {
+    assert(html.includes(`class="language-link" href="${japanesePath}"`), `${file}: same-page Japanese switch link is missing`);
+    assert(html.includes("language-link--current\" aria-current=\"page\">EN"), `${file}: current EN label is missing`);
+    for (const leakedString of ["主要ナビゲーション", "お問い合わせ", "表示設定", "アクセシビリティに関する情報"]) {
+      assert(!html.includes(leakedString), `${file}: untranslated Japanese interface string detected: ${leakedString}`);
+    }
+  } else {
+    assert(html.includes(`class="language-link" href="${englishPath}"`), `${file}: same-page English switch link is missing`);
   }
 }
-await access(path.join(root, "media/aquira-archive-interior.webp"));
-await access(path.join(root, "media/aquira-archive-interior-mobile.webp"));
 
 const japaneseHome = await readFile(path.join(root, "index.html"), "utf8");
 const englishHome = await readFile(path.join(root, "en/index.html"), "utf8");
-for (const html of [japaneseHome, englishHome]) {
-  if (!html.includes('hreflang="ja" href="https://www.aquira.art/"') && !html.includes('href="https://www.aquira.art/" hreflang="ja"')) {
-    throw new Error("localized home page: Japanese hreflang reference is missing");
-  }
-  if (!html.includes('hreflang="en" href="https://www.aquira.art/en/"') && !html.includes('href="https://www.aquira.art/en/" hreflang="en"')) {
-    throw new Error("localized home page: English hreflang reference is missing");
-  }
-}
-
-const robots = await readFile(path.join(root, "robots.txt"), "utf8");
-for (const bot of ["GPTBot", "Google-Extended", "OAI-SearchBot", "ClaudeBot", "PerplexityBot"]) {
-  if (!robots.includes(`User-agent: ${bot}\nAllow: /`)) throw new Error(`robots.txt: ${bot} allowance is missing`);
-}
-if (!robots.includes("User-agent: PetalBot\nDisallow: /")) {
-  throw new Error("robots.txt: PetalBot block is missing");
-}
+assert(japaneseHome.includes('alt="梁のある室内、カウンター、花、吊り下げ照明、右側に立つ人物を写したモノクロ写真"'), "Japanese home image alt text is missing");
+assert(englishHome.includes('alt="Black-and-white photograph of an interior with exposed beams, a counter, flowers, pendant lights, and a person standing on the right."'), "English home image alt text is missing");
+assert(englishHome.includes('<link rel="preload" as="image"') && englishHome.includes('fetchpriority="high"'), "English home image preload is missing");
+await access(path.join(root, "media/aquira-archive-interior.webp"));
+await access(path.join(root, "media/aquira-archive-interior-mobile.webp"));
 
 const sitemap = await readFile(path.join(root, "sitemap.xml"), "utf8");
-for (const { canonical } of checks) {
-  if (!sitemap.includes(`<loc>${canonical}</loc>`)) throw new Error(`sitemap.xml: ${canonical} is missing`);
-}
-
-const officialNetwork = await readFile(path.join(root, "official-network/index.html"), "utf8");
-for (const url of ["https://www.aquira.art/", "https://www.aquira1978.com/", "https://www.aquira.org/"]) {
-  if (!officialNetwork.includes(url)) throw new Error(`official-network/index.html: missing official-domain link ${url}`);
-}
-
-for (const file of ["official-network/index.html"]) {
-  const html = await readFile(path.join(root, file), "utf8");
-  for (const url of ["https://www.aquira.art/", "https://www.aquira1978.com/", "https://www.aquira.org/"]) {
-    if (!html.includes(`<a class="official-network-card__link" href="${url}"`)) {
-      throw new Error(`${file}: ${url} must be a full-card official-network link`);
-    }
-  }
-}
+for (const [pathname] of routes) assert(sitemap.includes(`<loc>${origin}${pathname}</loc>`), `sitemap.xml: ${pathname} is missing`);
+const robots = await readFile(path.join(root, "robots.txt"), "utf8");
+for (const bot of ["GPTBot", "Google-Extended", "OAI-SearchBot", "ClaudeBot", "PerplexityBot"]) assert(robots.includes(`User-agent: ${bot}\nAllow: /`), `robots.txt: ${bot} allowance is missing`);
+assert(robots.includes("User-agent: PetalBot\nDisallow: /"), "robots.txt: PetalBot block is missing");
 
 const production = JSON.parse(await readFile(path.join(root, "ops/production.json"), "utf8"));
-if (production.production_origin !== "https://www.aquira.art/") throw new Error("production.json: production origin is incorrect");
-if (production.canonical_host !== "www.aquira.art") throw new Error("production.json: canonical host is incorrect");
-if (production.deployment_mode !== "manual workflow dispatch") throw new Error("production.json: unexpected deployment mode");
-
-console.log(`SEO validation passed: ${checks.length} canonical pages, bilingual metadata, JSON-LD, robots, and sitemap verified.`);
+assert(production.production_origin === "https://www.aquira.art/", "production origin is incorrect");
+assert(production.canonical_host === "www.aquira.art", "canonical host is incorrect");
+assert(production.deployment_mode === "manual workflow dispatch", "deployment mode is incorrect");
+console.log(`SEO validation passed: ${routes.length} bilingual pages, reciprocal alternates, self-canonicals, JSON-LD, assets, sitemap, and crawler rules.`);

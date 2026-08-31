@@ -50,11 +50,15 @@ function renderHeader({ language = "ja", pathname = "/" } = {}) {
   const navigationLabel = language === "en" ? "Primary navigation" : "主要ナビゲーション";
   const homeLabel = language === "en" ? `${content.site.shortName} home` : `${content.site.name} ホーム`;
   const contactLabel = language === "en" ? "Contact" : "お問い合わせ";
+  const languageHref = language === "en" ? (pathname === "/en/" ? "/" : pathname.replace(/^\/en/, "")) : (pathname === "/" ? "/en/" : `/en${pathname}`);
+  const languageLabel = language === "en" ? "日本語" : "EN";
+  const languageAriaLabel = language === "en" ? "View this page in Japanese" : "View this page in English";
   return `
     <header class="site-header">
       <a class="wordmark" href="/" aria-label="${escapeHtml(homeLabel)}">${escapeHtml(content.site.shortName)}</a>
       <nav class="site-header__navigation" aria-label="${escapeHtml(navigationLabel)}">
         ${renderNavigation(navigation, pathname)}
+        <a class="language-link" href="${escapeHtml(languageHref)}" aria-label="${escapeHtml(languageAriaLabel)}">${escapeHtml(languageLabel)}</a>
       </nav>
       <a class="site-header__contact" href="${escapeHtml(content.contact.href)}">${escapeHtml(contactLabel)}</a>
     </header>`;
@@ -121,16 +125,12 @@ function pageSchema({ pathname, title, description, language = "ja-JP", type = "
 }
 
 function renderLanguageAlternates(pathname) {
-  const canonical = absoluteUrl(pathname);
-  if (pathname === "/" || pathname === "/en/") {
-    return `
-      <link rel="alternate" href="${escapeHtml(absoluteUrl("/"))}" hreflang="ja" />
-      <link rel="alternate" href="${escapeHtml(absoluteUrl("/en/"))}" hreflang="en" />
-      <link rel="alternate" href="${escapeHtml(absoluteUrl("/"))}" hreflang="x-default" />`;
-  }
+  const japanesePath = pathname === "/en/" ? "/" : pathname.replace(/^\/en/, "");
+  const englishPath = japanesePath === "/" ? "/en/" : `/en${japanesePath}`;
   return `
-      <link rel="alternate" href="${escapeHtml(canonical)}" hreflang="ja" />
-      <link rel="alternate" href="${escapeHtml(canonical)}" hreflang="x-default" />`;
+      <link rel="alternate" href="${escapeHtml(absoluteUrl(japanesePath))}" hreflang="ja" />
+      <link rel="alternate" href="${escapeHtml(absoluteUrl(englishPath))}" hreflang="en" />
+      <link rel="alternate" href="${escapeHtml(absoluteUrl(japanesePath))}" hreflang="x-default" />`;
 }
 
 function renderHead({ pathname, title, description, schema, language = "ja" }) {
@@ -149,6 +149,7 @@ function renderHead({ pathname, title, description, schema, language = "ja" }) {
 ${pathname === "/" || pathname === "/en/" ? `      <link rel="preload" as="image" href="${escapeHtml(absoluteUrl("/media/aquira-archive-interior.webp"))}" type="image/webp" fetchpriority="high" />` : ""}
       ${renderLanguageAlternates(pathname)}
       <link rel="stylesheet" href="/styles.css?v=${assetVersion}" />
+      <link rel="stylesheet" href="/styles/localization.css?v=${assetVersion}" />
       <script src="/accessibility.js?v=${assetVersion}" defer></script>
       <meta property="og:locale" content="${isEnglish ? "en_US" : "ja_JP"}" />
       <meta property="og:type" content="website" />
@@ -171,16 +172,16 @@ ${pathname === "/" || pathname === "/en/" ? `      <link rel="preload" as="image
 
 function renderAccessibilityTools({ language = "ja" } = {}) {
   const copy = language === "en"
-    ? { trigger: "Display settings", title: "Display settings", close: "Close", smaller: "Smaller text", larger: "Larger text", contrast: "High contrast", underline: "Underline links", motion: "Reduce motion", reset: "Reset", page: "Accessibility information" }
-    : { trigger: "表示設定", title: "表示設定", close: "閉じる", smaller: "文字を小さく", larger: "文字を大きく", contrast: "高コントラスト", underline: "リンクに下線", motion: "動きを抑える", reset: "初期状態に戻す", page: "アクセシビリティに関する情報" };
+    ? { trigger: "Display settings", title: "Display settings", close: "Close", description: "Adjust readability and the amount of motion to suit your device.", smaller: "Smaller text", larger: "Larger text", contrast: "High contrast", underline: "Underline links", motion: "Reduce motion", reset: "Reset", page: "Accessibility information", href: "/en/accessibility/" }
+    : { trigger: "表示設定", title: "表示設定", close: "閉じる", description: "お使いの端末に合わせて、読みやすさや動きの量を調整できます。", smaller: "文字を小さく", larger: "文字を大きく", contrast: "高コントラスト", underline: "リンクに下線", motion: "動きを抑える", reset: "初期状態に戻す", page: "アクセシビリティに関する情報", href: "/accessibility/" };
   return `
     <div class="a11y-tools">
       <button class="a11y-tools__trigger" type="button" data-a11y-trigger aria-expanded="false" aria-controls="a11y-panel">${escapeHtml(copy.trigger)}</button>
       <section class="a11y-tools__panel" id="a11y-panel" data-a11y-panel role="dialog" aria-modal="false" aria-labelledby="a11y-panel-title" hidden>
         <div class="a11y-tools__panel-header"><h2 id="a11y-panel-title">${escapeHtml(copy.title)}</h2><button class="a11y-tools__close" type="button" data-a11y-close aria-label="${escapeHtml(copy.close)}">×</button></div>
-        <p>お使いの端末に合わせて、読みやすさや動きの量を調整できます。</p>
+        <p>${escapeHtml(copy.description)}</p>
         <div class="a11y-tools__actions"><button type="button" data-a11y-action="font-decrease">A− ${escapeHtml(copy.smaller)}</button><button type="button" data-a11y-action="font-increase">A＋ ${escapeHtml(copy.larger)}</button><button type="button" data-a11y-action="contrast" aria-pressed="false">${escapeHtml(copy.contrast)}</button><button type="button" data-a11y-action="underline" aria-pressed="false">${escapeHtml(copy.underline)}</button><button type="button" data-a11y-action="motion" aria-pressed="false">${escapeHtml(copy.motion)}</button><button type="button" data-a11y-action="reset">${escapeHtml(copy.reset)}</button></div>
-        <a class="text-link" href="/accessibility/">${escapeHtml(copy.page)}</a>
+        <a class="text-link" href="${escapeHtml(copy.href)}">${escapeHtml(copy.page)}</a>
       </section>
       <p class="visually-hidden" data-a11y-status aria-live="polite" aria-atomic="true"></p>
     </div>`;
@@ -730,4 +731,5 @@ await Promise.all([
   writeFile(path.join(projectDirectory, "robots.txt"), robots, "utf8"),
 ]);
 
-console.log(`AQUIRA SEO/AEO HTMLを生成しました: ${pages.length}ページ、robots.txt、sitemap.xml`);
+await import("./build-english.mjs");
+console.log(`AQUIRA SEO/AEO HTMLを生成しました: ${pages.length} Japanese pages and matching English pages, robots.txt, sitemap.xml`);
