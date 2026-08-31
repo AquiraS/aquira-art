@@ -13,7 +13,7 @@ const projectDirectory = path.resolve(scriptDirectory, "..");
 const contentPath = pathToFileURL(path.join(projectDirectory, "content", "site-content.js"));
 const { default: content } = await import(`${contentPath.href}?updated=${Date.now()}`);
 const buildDate = "2026-08-31";
-const assetVersion = "20260831a";
+const assetVersion = "20260831b";
 
 function escapeHtml(value) {
   return String(value)
