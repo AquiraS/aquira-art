@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const assetVersion = "20260829";
+const assetVersion = "20260831";
 const checks = [
   { file: "index.html", canonical: "https://www.aquira.art/", type: "WebPage", language: "ja" },
   { file: "accessibility/index.html", canonical: "https://www.aquira.art/accessibility/", type: "WebPage", language: "ja" },
@@ -135,6 +135,17 @@ for (const requiredBehavior of ["prefers-reduced-motion: reduce", "a11y-reduce-m
 }
 
 const home = await readFile(path.join(root, "index.html"), "utf8");
+const englishHomeVisual = await readFile(path.join(root, "en/index.html"), "utf8");
+for (const [file, html] of [["index.html", home], ["en/index.html", englishHomeVisual]]) {
+  if (!html.includes('class="hero hero--visual"') || !html.includes('src="/media/aquira-archive-interior.webp"') || !html.includes('srcset="/media/aquira-archive-interior-mobile.webp"') || !html.includes('alt="梁のある室内、カウンター、花、吊り下げ照明、右側に立つ人物を写したモノクロ写真"')) {
+    throw new Error(`${file}: main visual picture, responsive source, or accessible alternative text is missing`);
+  }
+  if (!html.includes('<link rel="preload" as="image"') || !html.includes('fetchpriority="high"')) {
+    throw new Error(`${file}: main visual preload is missing`);
+  }
+}
+await access(path.join(root, "media/aquira-archive-interior.webp"));
+await access(path.join(root, "media/aquira-archive-interior-mobile.webp"));
 const homeChapterCards = [...home.matchAll(/<article class="official-network-card[^>]*\bdata-chapter-card\b[^>]*>/g)];
 if (homeChapterCards.length !== 3) {
   throw new Error(`index.html: expected exactly three homepage chapter cards, found ${homeChapterCards.length}`);

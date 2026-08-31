@@ -12,8 +12,8 @@ const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectDirectory = path.resolve(scriptDirectory, "..");
 const contentPath = pathToFileURL(path.join(projectDirectory, "content", "site-content.js"));
 const { default: content } = await import(`${contentPath.href}?updated=${Date.now()}`);
-const buildDate = "2026-08-29";
-const assetVersion = "20260829";
+const buildDate = "2026-08-31";
+const assetVersion = "20260831";
 
 function escapeHtml(value) {
   return String(value)
@@ -163,6 +163,7 @@ function renderHead({ pathname, title, description, schema, language = "ja" }) {
       <meta name="theme-color" content="#101010" />
       <title>${escapeHtml(title)}</title>
       <link rel="canonical" href="${escapeHtml(canonical)}" />
+${pathname === "/" || pathname === "/en/" ? `      <link rel="preload" as="image" href="${escapeHtml(absoluteUrl("/media/aquira-archive-interior.webp"))}" type="image/webp" fetchpriority="high" />` : ""}
       ${renderLanguageAlternates(pathname)}
       <link rel="stylesheet" href="/styles.css?v=${assetVersion}" />
       <script src="/accessibility.js?v=${assetVersion}" defer></script>
@@ -173,9 +174,15 @@ function renderHead({ pathname, title, description, schema, language = "ja" }) {
       <meta property="og:title" content="${escapeHtml(title)}" />
       <meta property="og:description" content="${escapeHtml(description)}" />
       <meta property="og:url" content="${escapeHtml(canonical)}" />
-      <meta name="twitter:card" content="summary" />
+      <meta property="og:image" content="${escapeHtml(absoluteUrl("/media/aquira-archive-interior.webp"))}" />
+      <meta property="og:image:width" content="2048" />
+      <meta property="og:image:height" content="1392" />
+      <meta property="og:image:alt" content="梁のある室内、カウンター、花、吊り下げ照明、右側に立つ人物を写したモノクロ写真" />
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content="${escapeHtml(title)}" />
       <meta name="twitter:description" content="${escapeHtml(description)}" />
+      <meta name="twitter:image" content="${escapeHtml(absoluteUrl("/media/aquira-archive-interior.webp"))}" />
+      <meta name="twitter:image:alt" content="梁のある室内、カウンター、花、吊り下げ照明、右側に立つ人物を写したモノクロ写真" />
       <script type="application/ld+json">${jsonForHtml({ "@context": "https://schema.org", "@graph": schema })}</script>
     </head>`;
 }
@@ -217,6 +224,10 @@ function renderLayout({ pathname, title, description, schema, main, language = "
 function renderSectionHeading(eyebrow, title, id = "") {
   const idAttribute = id ? ` id="${escapeHtml(id)}"` : "";
   return `<div class="section__heading"><p class="eyebrow">${escapeHtml(eyebrow)}</p><h2${idAttribute}>${escapeHtml(title)}</h2></div>`;
+}
+
+function renderHeroMedia() {
+  return `<picture class="hero__media"><source media="(max-width: 700px)" srcset="/media/aquira-archive-interior-mobile.webp" type="image/webp" /><img class="hero__image" src="/media/aquira-archive-interior.webp" width="2048" height="1392" alt="梁のある室内、カウンター、花、吊り下げ照明、右側に立つ人物を写したモノクロ写真" fetchpriority="high" decoding="async" /></picture>`;
 }
 
 function renderIdentityFacts() {
@@ -290,13 +301,16 @@ function renderValueCards(items, { numbered = false } = {}) {
 
 const homeTitle = `${content.site.name} | 横浜の写真家・現代アーティスト`;
 const homeMain = `
-  <section class="hero" aria-labelledby="hero-title">
-    <p class="eyebrow">${escapeHtml(content.hero.eyebrow)}</p>
-    <h1 id="hero-title">${escapeHtml(content.hero.title)}</h1>
-    <p class="lead">${escapeHtml(content.hero.description)}</p>
-    <div class="hero__actions">
-      <a class="button button--primary" href="${escapeHtml(content.hero.button.href)}">${escapeHtml(content.hero.button.label)}</a>
-      <a class="button button--secondary" href="${escapeHtml(content.contact.href)}">${escapeHtml(content.contact.label)}</a>
+  <section class="hero hero--visual" aria-labelledby="hero-title">
+    ${renderHeroMedia()}
+    <div class="hero__content">
+      <p class="eyebrow">${escapeHtml(content.hero.eyebrow)}</p>
+      <h1 id="hero-title">${escapeHtml(content.hero.title)}</h1>
+      <p class="lead">${escapeHtml(content.hero.description)}</p>
+      <div class="hero__actions">
+        <a class="button button--primary" href="${escapeHtml(content.hero.button.href)}">${escapeHtml(content.hero.button.label)}</a>
+        <a class="button button--secondary" href="${escapeHtml(content.contact.href)}">${escapeHtml(content.contact.label)}</a>
+      </div>
     </div>
   </section>
   <section class="section" aria-labelledby="identity-title">
@@ -601,11 +615,14 @@ const englishTitle = content.english.title;
 const englishDescription =
   "Official website for Aquira, a Yokohama-based photographer, audiovisual artist, and contemporary artist working across photography, moving image, and digital expression.";
 const englishMain = `
-  <section class="hero" aria-labelledby="english-home-title">
-    <p class="eyebrow">${escapeHtml(content.english.eyebrow)}</p>
-    <h1 id="english-home-title">${escapeHtml(content.english.headline)}</h1>
-    <p class="lead">${escapeHtml(content.english.introduction)}</p>
-    <a class="button button--primary" href="/about/">View artist profile</a>
+  <section class="hero hero--visual" aria-labelledby="english-home-title">
+    ${renderHeroMedia()}
+    <div class="hero__content">
+      <p class="eyebrow">${escapeHtml(content.english.eyebrow)}</p>
+      <h1 id="english-home-title">${escapeHtml(content.english.headline)}</h1>
+      <p class="lead">${escapeHtml(content.english.introduction)}</p>
+      <a class="button button--primary" href="/about/">View artist profile</a>
+    </div>
   </section>
   <section class="section" aria-labelledby="english-identity-title">
     ${renderSectionHeading("OFFICIAL IDENTITY", content.english.identityTitle, "english-identity-title")}
