@@ -12,7 +12,7 @@ const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectDirectory = path.resolve(scriptDirectory, "..");
 const contentPath = pathToFileURL(path.join(projectDirectory, "content", "site-content.js"));
 const { default: content } = await import(`${contentPath.href}?updated=${Date.now()}`);
-const buildDate = "2026-08-31";
+const buildDate = "2026-09-28";
 const assetVersion = "20260831b";
 
 function escapeHtml(value) {
@@ -76,7 +76,7 @@ function renderFooter() {
     <footer class="site-footer">
       <div class="site-footer__identity"><p class="site-footer__title">${escapeHtml(content.footer.title)}</p><p class="site-footer__description">${escapeHtml(content.footer.description)}</p></div>
       <nav class="site-footer__network" aria-label="Aquira公式エコシステム"><p>公式エコシステム</p><ul>${officialLinks}</ul></nav>
-      <nav class="site-footer__links" aria-label="公式プロフィール・法定情報・お問い合わせ"><ul>${newsLink}<li><a href="/accessibility/">アクセシビリティ</a></li><li><a href="${escapeHtml(content.footer.legalNotice.href)}">${escapeHtml(content.footer.legalNotice.label)}</a></li><li><a href="${escapeHtml(content.contact.href)}">${escapeHtml(content.contact.label)}</a></li>${socialLinks}</ul></nav>
+      <nav class="site-footer__links" aria-label="公式プロフィール・法定情報・お問い合わせ"><ul>${newsLink}<li><a href="/accessibility/">アクセシビリティ</a></li><li><a href="${escapeHtml(content.footer.legalNotice.href)}">${escapeHtml(content.footer.legalNotice.label)}</a></li><li><a href="${escapeHtml(content.footer.shippingInsurance.href)}">${escapeHtml(content.footer.shippingInsurance.label)}</a></li><li><a href="${escapeHtml(content.contact.href)}">${escapeHtml(content.contact.label)}</a></li>${socialLinks}</ul></nav>
       <p class="site-footer__meta">公式情報の最終更新: <time datetime="${buildDate}">${buildDate}</time></p>
     </footer>`;
 }
@@ -642,6 +642,31 @@ const tokushohoSchema = [
   pageSchema({ pathname: "/tokushoho/", title: tokushohoTitle, description: tokushohoDescription }),
 ];
 
+const shippingInsuranceTitle = `輸送・配送保険について | ${content.site.titleSuffix}`;
+const shippingInsuranceDescription = "Aquiraの作品の輸送・配送に関する保険の取扱い、事故時の連絡方法、国際配送での確認事項をご案内します。";
+const shippingInsuranceMain = `
+  <section class="hero hero--compact" aria-labelledby="shipping-insurance-title">
+    <p class="eyebrow">${escapeHtml(content.shippingInsurance.eyebrow)}</p>
+    <h1 id="shipping-insurance-title">${escapeHtml(content.shippingInsurance.title)}</h1>
+    <p class="lead">${escapeHtml(content.shippingInsurance.summary)}</p>
+  </section>
+  <section class="section" aria-labelledby="shipping-insurance-details-title">
+    ${renderSectionHeading("INSURANCE DETAILS", "ご確認いただきたいこと", "shipping-insurance-details-title")}
+    <div class="prose-list">${content.shippingInsurance.sections
+      .map((section) => `<article><h2>${escapeHtml(section.title)}</h2><p>${escapeHtml(section.description)}</p></article>`)
+      .join("")}</div>
+  </section>
+  <section class="section section--muted" aria-labelledby="shipping-insurance-contact-title">
+    ${renderSectionHeading("CONTACT", "発送前の確認を大切にします。", "shipping-insurance-contact-title")}
+    <p class="statement">輸送・配送保険の取扱いは、作品と配送条件に応じて異なります。ご注文または発送前に、配送先、希望する配送方法、保険に関するご希望をお知らせください。</p>
+    <a class="button button--primary" href="${escapeHtml(content.contact.href)}">${escapeHtml(content.shippingInsurance.contactLabel)}</a>
+  </section>`;
+const shippingInsuranceSchema = [
+  websiteSchema(),
+  personSchema(),
+  pageSchema({ pathname: "/shipping-insurance/", title: shippingInsuranceTitle, description: shippingInsuranceDescription }),
+];
+
 const accessibilityTitle = `アクセシビリティ | ${content.site.titleSuffix}`;
 const accessibilityDescription = "Aquira（アキラ）公式サイトのアクセシビリティに関する取り組み、表示設定、連絡方法をご案内します。";
 const accessibilityMain = `
@@ -665,6 +690,7 @@ const pages = [
   { pathname: "/", output: "index.html", title: homeTitle, description: content.site.description, schema: homeSchema, main: homeMain },
   { pathname: "/accessibility/", output: "accessibility/index.html", title: accessibilityTitle, description: accessibilityDescription, schema: accessibilitySchema, main: accessibilityMain },
   { pathname: "/tokushoho/", output: "tokushoho/index.html", title: tokushohoTitle, description: tokushohoDescription, schema: tokushohoSchema, main: tokushohoMain },
+  { pathname: "/shipping-insurance/", output: "shipping-insurance/index.html", title: shippingInsuranceTitle, description: shippingInsuranceDescription, schema: shippingInsuranceSchema, main: shippingInsuranceMain },
   { pathname: "/about/", output: "about/index.html", title: aboutTitle, description: aboutDescription, schema: aboutSchema, main: aboutMain },
   { pathname: "/policy/", output: "policy/index.html", title: policyTitle, description: policyDescription, schema: policySchema, main: policyMain },
   { pathname: "/ecosystem/", output: "ecosystem/index.html", title: ecosystemTitle, description: ecosystemDescription, schema: ecosystemSchema, main: ecosystemMain },

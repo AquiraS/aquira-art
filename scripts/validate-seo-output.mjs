@@ -8,6 +8,7 @@ const routes = [
   ["/", "index.html", "ja", "WebPage"],
   ["/accessibility/", "accessibility/index.html", "ja", "WebPage"],
   ["/tokushoho/", "tokushoho/index.html", "ja", "WebPage"],
+  ["/shipping-insurance/", "shipping-insurance/index.html", "ja", "WebPage"],
   ["/about/", "about/index.html", "ja", "ProfilePage"],
   ["/policy/", "policy/index.html", "ja", "WebPage"],
   ["/ecosystem/", "ecosystem/index.html", "ja", "WebPage"],
@@ -19,6 +20,7 @@ const routes = [
   ["/en/", "en/index.html", "en", "WebPage"],
   ["/en/accessibility/", "en/accessibility/index.html", "en", "WebPage"],
   ["/en/tokushoho/", "en/tokushoho/index.html", "en", "WebPage"],
+  ["/en/shipping-insurance/", "en/shipping-insurance/index.html", "en", "WebPage"],
   ["/en/about/", "en/about/index.html", "en", "ProfilePage"],
   ["/en/policy/", "en/policy/index.html", "en", "WebPage"],
   ["/en/ecosystem/", "en/ecosystem/index.html", "en", "WebPage"],
@@ -69,6 +71,8 @@ const englishHome = await readFile(path.join(root, "en/index.html"), "utf8");
 assert(japaneseHome.includes('alt="梁のある室内、カウンター、花、吊り下げ照明、右側に立つ人物を写したモノクロ写真"'), "Japanese home image alt text is missing");
 assert(englishHome.includes('alt="Black-and-white photograph of an interior with exposed beams, a counter, flowers, pendant lights, and a person standing on the right."'), "English home image alt text is missing");
 assert(englishHome.includes('<link rel="preload" as="image"') && englishHome.includes('fetchpriority="high"'), "English home image preload is missing");
+assert(japaneseHome.includes('href="/shipping-insurance/">輸送・配送保険</a>'), "Japanese insurance footer link is missing");
+assert(englishHome.includes('href="/en/shipping-insurance/">Transport & Delivery Insurance</a>'), "English insurance footer link is missing");
 await access(path.join(root, "media/aquira-archive-interior.webp"));
 await access(path.join(root, "media/aquira-archive-interior-mobile.webp"));
 

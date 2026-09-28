@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const contentUrl = pathToFileURL(path.join(root, "content", "site-content.js"));
 const { default: content } = await import(`${contentUrl.href}?updated=${Date.now()}`);
-const buildDate = "2026-08-31";
+const buildDate = "2026-09-28";
 const assetVersion = "20260831b";
 const origin = content.site.origin;
 
@@ -45,7 +45,7 @@ function footer() {
     ["Origin & Archive", "https://www.aquira1978.com/en/", false],
     ["Public Practice", "https://www.aquira.org/en/", false],
   ].map(([label, href, internal]) => `<li><a href="${href}"${internal ? "" : ' target="_blank" rel="noopener noreferrer"'}>${label}</a></li>`).join("");
-  return `<footer class="site-footer"><div class="site-footer__identity"><p class="site-footer__title">Aquira（アキラ）</p><p class="site-footer__description">Photography · Audiovisual Art · Contemporary Art — Yokohama, Japan</p></div><nav class="site-footer__network" aria-label="Official Aquira network"><p>Official network</p><ul>${officialLinks}</ul></nav><nav class="site-footer__links" aria-label="Official profile, legal information, and contact"><ul><li><a href="https://note.com/aquira" target="_blank" rel="external noopener noreferrer" aria-label="Open News in a new tab">News</a></li><li><a href="/en/accessibility/">Accessibility</a></li><li><a href="/en/tokushoho/">Legal Notice under the Act on Specified Commercial Transactions</a></li><li><a href="mailto:aquirae@me.com">Contact & enquiries</a></li>${socialLinks}</ul></nav><p class="site-footer__meta">Official information last updated: <time datetime="${buildDate}">${buildDate}</time></p></footer>`;
+  return `<footer class="site-footer"><div class="site-footer__identity"><p class="site-footer__title">Aquira（アキラ）</p><p class="site-footer__description">Photography · Audiovisual Art · Contemporary Art — Yokohama, Japan</p></div><nav class="site-footer__network" aria-label="Official Aquira network"><p>Official network</p><ul>${officialLinks}</ul></nav><nav class="site-footer__links" aria-label="Official profile, legal information, and contact"><ul><li><a href="https://note.com/aquira" target="_blank" rel="external noopener noreferrer" aria-label="Open News in a new tab">News</a></li><li><a href="/en/accessibility/">Accessibility</a></li><li><a href="/en/tokushoho/">Legal Notice under the Act on Specified Commercial Transactions</a></li><li><a href="/en/shipping-insurance/">Transport & Delivery Insurance</a></li><li><a href="mailto:aquirae@me.com">Contact & enquiries</a></li>${socialLinks}</ul></nav><p class="site-footer__meta">Official information last updated: <time datetime="${buildDate}">${buildDate}</time></p></footer>`;
 }
 
 function accessibilityTools() {
@@ -146,6 +146,10 @@ const pages = [
     pathname: "/en/tokushoho/", output: "en/tokushoho/index.html", type: "WebPage", title: "Legal Notice under the Act on Specified Commercial Transactions | Aquira", description: "Information on sales terms, payment, delivery, and returns for Aquira products.",
     main: `<section class="hero hero--compact" aria-labelledby="notice-title"><p class="eyebrow">LEGAL NOTICE</p><h1 id="notice-title">Legal Notice under the Act on Specified Commercial Transactions</h1><p class="lead">Please review information about sales terms and contact details before considering or purchasing a product.</p></section><section class="section" aria-label="Legal Notice under the Act on Specified Commercial Transactions">${legalDisclosure}</section>`,
   },
+  {
+    pathname: "/en/shipping-insurance/", output: "en/shipping-insurance/index.html", type: "WebPage", title: "Transport & Delivery Insurance | Aquira", description: "Information about the individual confirmation of transport and delivery insurance for Aquira artworks, including what is checked before dispatch and how to report a delivery incident.",
+    main: `<section class="hero hero--compact" aria-labelledby="shipping-insurance-title"><p class="eyebrow">SHIPPING & DELIVERY</p><h1 id="shipping-insurance-title">Transport & delivery insurance</h1><p class="lead">For artworks, Aquira confirms transport and delivery insurance individually according to the nature of the work, packing and transport method, destination, and the terms of the transaction. Whether coverage is available, its scope, and related costs are specified in the quotation or individual written guidance.</p></section><section class="section" aria-labelledby="shipping-insurance-details-title">${sectionHeading("INSURANCE DETAILS", "What is confirmed", "shipping-insurance-details-title")}${proseList([["Before dispatch", "Where a shipment may carry insurance, availability, scope, insured value, excesses, allocation of insurance and delivery costs, shipping method, and destination are confirmed before dispatch."], ["If a delivery incident or damage is found", "Please keep photographs that show the outer packaging, packing materials, and condition of the work. Retain delivery documents and packaging materials where possible, and contact us promptly. Any contact with the carrier or insurer, and the required procedure, will be advised for the individual shipment."], ["Scope of coverage", "The availability, scope, limit, and response in the event of an incident are governed by the terms of the associated insurance or delivery service and the individual transaction agreement. Please confirm the treatment of delay, customs duty, import tax, and indirect loss before dispatch."], ["International delivery", "As stated in the Legal Notice under the Act on Specified Commercial Transactions, international shipping charges, customs duty, import tax, customs-clearance charges, and other applicable charges are borne by the purchaser. Insurance availability and conditions may differ by destination and delivery method."]])}</section><section class="section section--muted" aria-labelledby="shipping-insurance-contact-title">${sectionHeading("CONTACT", "Confirm the details before dispatch.", "shipping-insurance-contact-title")}<p class="statement">The treatment of transport and delivery insurance varies with the work and delivery conditions. Before placing an order or arranging dispatch, please share the destination, preferred delivery method, and any insurance requirements.</p><a class="button button--primary" href="mailto:aquirae@me.com">Enquire about transport and delivery</a></section>`,
+  },
 ];
 
 for (const page of pages) {
@@ -155,7 +159,7 @@ for (const page of pages) {
   await writeFile(output, `${layout(page, extra).replace(/[ \t]+$/gm, "").trim()}\n`, "utf8");
 }
 
-const japanesePaths = ["/", "/accessibility/", "/tokushoho/", "/about/", "/policy/", "/ecosystem/", "/works/", "/practice/", "/official-network/", "/licensing/", "/faq/"];
+const japanesePaths = ["/", "/accessibility/", "/tokushoho/", "/shipping-insurance/", "/about/", "/policy/", "/ecosystem/", "/works/", "/practice/", "/official-network/", "/licensing/", "/faq/"];
 const allPaths = [...japanesePaths, ...pages.map((page) => page.pathname)];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${allPaths.map((pathname) => `  <url>\n    <loc>${absoluteUrl(pathname)}</loc>\n    <lastmod>${buildDate}</lastmod>\n  </url>`).join("\n")}\n</urlset>\n`;
 await writeFile(path.join(root, "sitemap.xml"), sitemap, "utf8");

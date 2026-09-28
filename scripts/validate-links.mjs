@@ -54,6 +54,6 @@ for (const pageFile of pages) {
   }
 }
 
-const requiredEnglish = ["en/index.html", "en/about/index.html", "en/works/index.html", "en/practice/index.html", "en/ecosystem/index.html", "en/official-network/index.html", "en/policy/index.html", "en/accessibility/index.html", "en/licensing/index.html", "en/faq/index.html", "en/tokushoho/index.html"];
+const requiredEnglish = ["en/index.html", "en/about/index.html", "en/works/index.html", "en/practice/index.html", "en/ecosystem/index.html", "en/official-network/index.html", "en/policy/index.html", "en/accessibility/index.html", "en/licensing/index.html", "en/faq/index.html", "en/tokushoho/index.html", "en/shipping-insurance/index.html"];
 for (const file of requiredEnglish) await access(path.join(root, file));
 console.log(`Link validation passed: ${pages.length} pages, ${linksChecked} anchors, and all English route destinations resolve locally.`);
